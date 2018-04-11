@@ -21,15 +21,16 @@ class RequestLogin extends Request
 
     public function prepareRequest()
     {
+        $this->storage->loadCookie();
         $this->curl = curl_init($this->instagram_url . $this->login_url);
         curl_setopt($this->curl, CURLOPT_POST, true);
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, http_build_query($this->data));
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($this->curl, CURLOPT_COOKIEJAR, $this->cookie_file);
+        curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
-            "Cookie: rur=FTW; csrftoken=9IV0j85cIXJ3a3B3sjNnZSzmS16RD3Pt; mid=Ws47hAAEAAEbFgiJlzua3to_2TBO; ig_vw=1915; ig_pr=1; ig_vh=937",
+            "Cookie: rur=FTW; csrftoken=" . $this->storage->getCookie("csrftoken") . "; mid=Ws47hAAEAAEbFgiJlzua3to_2TBO; ig_vw=1915; ig_pr=1; ig_vh=937",
             "Referer: https://www.instagram.com/",
-            "x-csrftoken: 9IV0j85cIXJ3a3B3sjNnZSzmS16RD3Pt",
+            "x-csrftoken: " . $this->storage->getCookie("csrftoken"),
             "x-instagram-ajax: 1",
             "x-requested-with: XMLHttpRequest",
             "Content-Type: application/x-www-form-urlencoded",
@@ -40,8 +41,19 @@ class RequestLogin extends Request
 
     public function send()
     {
+        if (!empty($this->storage->getCookie("sessionid"))) {
+            return true;
+        }
+        parent::send();
         $this->prepareRequest();
         $result = curl_exec($this->curl);
+        $cookie = curl_getinfo($this->curl, CURLINFO_COOKIELIST);
+        foreach ($cookie as $cookie_str) {
+            $cookie_parts = explode("	", $cookie_str);
+            $this->storage->setCookie($cookie_parts[5], $cookie_parts[6]);
+        }
+
+        $this->storage->saveCookie();
         $result = json_decode($result, true);
         return $result;
 

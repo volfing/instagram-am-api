@@ -60,6 +60,32 @@ class CookieHelper
      */
     public function getCookie($name)
     {
-        return $this->cookie_data[$name];
+        if (isset($this->cookie_data[$name])) {
+            return $this->cookie_data[$name];
+        }
+        return null;
+    }
+
+    /**
+     * Загрузить данные из кук
+     */
+    public function loadCookie()
+    {
+        $this->cookie_data = json_decode(file_get_contents($this->cookie_file), true);
+    }
+
+    /**
+     * Сохранить данные в куки
+     */
+    public function saveCookie()
+    {
+        $f = fopen($this->cookie_file, "w");
+        fwrite($f, json_encode($this->cookie_data));
+        fclose($f);
+    }
+
+    public function getCookieString()
+    {
+        return json_encode($this->cookie_data);
     }
 }

@@ -11,5 +11,12 @@ $instagrm = new Instagram();
 $username = "user_name";
 $password = "user_password";
 $res = $instagrm->login($username, $password);
+if ($res['authenticated']) {
+    print("Success auth.");
+} elseif($res['user']) {
+    print("Wrong password.");
+} else {
+    print("User not found.");
+}
 var_dump($res);
 ?>

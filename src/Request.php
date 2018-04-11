@@ -12,6 +12,9 @@ use InstagramAmAPI\Storage\CookieHelper;
 
 /**
  * Class Request
+ * @property array $data
+ * @property $curl
+ * @property CookieHelper $storage
  * @package InstagramAmAPI
  */
 class Request
@@ -20,7 +23,6 @@ class Request
     protected $curl;
     protected $data;
     protected $storage = [];
-    protected $cookie_file;
 
     public function __construct($data = [])
     {
@@ -33,6 +35,12 @@ class Request
     public function prepareRequest()
     {
 
+        $this->storage->loadCookie();
+        $this->curl = curl_init($this->instagram_url);
+        curl_setopt($this->curl, CURLOPT_HEADER, false);
+        curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
+
     }
 
     /**
@@ -40,6 +48,14 @@ class Request
      */
     public function send()
     {
+        $this->prepareRequest();
+        $result = curl_exec($this->curl);
+        $cookie = curl_getinfo($this->curl, CURLINFO_COOKIELIST);
+        foreach ($cookie as $cookie_str) {
+            $cookie_parts = explode("	", $cookie_str);
+            $this->storage->setCookie($cookie_parts[5], $cookie_parts[6]);
+        }
+        $this->storage->saveCookie();
 
     }
 
