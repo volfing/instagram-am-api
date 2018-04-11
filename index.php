@@ -7,16 +7,47 @@ include __DIR__ . "/autoload.php";
 
 use InstagramAmAPI\Instagram;
 
-$instagrm = new Instagram();
-$username = "user_name";
-$password = "user_password";
-$res = $instagrm->login($username, $password);
-if ($res['authenticated']) {
-    print("Success auth.");
-} elseif($res['user']) {
-    print("Wrong password.");
-} else {
-    print("User not found.");
+$auth_message = "";
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    $instagram = new Instagram();
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $res = $instagram->login($username, $password);
+    if ($res['authenticated']) {
+        $auth_message = "Success auth.";
+    } elseif ($res['user']) {
+        $auth_message = "Wrong password.";
+    } else {
+        $auth_message = "User not found.";
+    }
 }
-var_dump($res);
 ?>
+<style>
+    .content {
+        text-align: center;
+    }
+    .form-item {
+        padding: 10px;
+    }
+</style>
+<div class="content">
+    <h1>Авторизация в Instagram.</h1>
+    <h3><?= $auth_message ?></h3>
+    <form method="post" action="/">
+        <div class="form-item">
+            <label>
+                Username
+                <input type="text" name="username" placeholder="Enter username" value="<?= $_POST['username'] ?>">
+            </label>
+        </div>
+        <div class="form-item">
+            <label>
+                Password
+                <input type="password" name="password" placeholder="Enter password" value="<?= $_POST['password'] ?>">
+            </label>
+        </div>
+        <div class="form-item">
+            <input type="submit" name="submit" value="Log in">
+        </div>
+    </form>
+</div>
