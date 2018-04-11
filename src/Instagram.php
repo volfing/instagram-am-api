@@ -8,6 +8,7 @@
 
 namespace InstagramAmAPI;
 
+use InstagramAmAPI\Request\RequestLike;
 use InstagramAmAPI\Request\RequestLogin;
 
 /**
@@ -16,6 +17,7 @@ use InstagramAmAPI\Request\RequestLogin;
  */
 class Instagram
 {
+    private $username;
     /**
      * @param $login
      * @param $password
@@ -24,6 +26,8 @@ class Instagram
      */
     public function login($login, $password, $force = false)
     {
+        $this->username = $login;
+
         return $this->_login($login, $password, $force);
     }
 
@@ -40,9 +44,15 @@ class Instagram
             "password" => $password
         ]);
         $request->setCookieFile($login);
-        $responce = $request->send();
-        return $responce;
+        $response = $request->send();
+        return $response;
 
+    }
+
+    public function like($mediaID){
+        $request = new RequestLike();
+        $request->setCookieFile($this->username);
+        $res = $request->like($mediaID);
     }
 
 }
