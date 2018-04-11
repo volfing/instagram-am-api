@@ -3,38 +3,51 @@
 /*echo file_get_contents('https://www.instagram.com/challenge/5955709178/Kzt1xNU0co/');
 exit;*/
 
-$res = httpPost("https://www.instagram.com/accounts/login/ajax/", array(
-	"username" => "user_name",
-	"password" => "user_password",
-	"queryParams" => []
-));
+include __DIR__ . "/autoload.php";
 
-echo($res);
+use InstagramAmAPI\Instagram;
 
-function httpPost($url, $data)
-{
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_POST, true);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	//curl_setopt($curl, CURLOPT_HEADER, 0);
-   /* $cookie_file = "cookie1.txt";
-    curl_setopt ($curl, CURLOPT_COOKIE, session_name() . '=' . session_id());
-	curl_setopt($curl, CURLOPT_COOKIESESSION, true);
-	curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_file);
-	curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_file);*/
-	
-	curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-		"Cookie: rur=FTW; csrftoken=9IV0j85cIXJ3a3B3sjNnZSzmS16RD3Pt; mid=Ws47hAAEAAEbFgiJlzua3to_2TBO; ig_vw=1915; ig_pr=1; ig_vh=937",
-		"Referer: https://www.instagram.com/",
-		"x-csrftoken: 9IV0j85cIXJ3a3B3sjNnZSzmS16RD3Pt",
-		"x-instagram-ajax: 1",
-		"x-requested-with: XMLHttpRequest",
-		"Content-Type: application/x-www-form-urlencoded",
-
-	));
-    $response = curl_exec($curl);
-    curl_close($curl);
-    return $response;
+$auth_message = "";
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    $instagram = new Instagram();
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $res = $instagram->login($username, $password);
+    if ($res['authenticated']) {
+        $auth_message = "Success auth.";
+    } elseif ($res['user']) {
+        $auth_message = "Wrong password.";
+    } else {
+        $auth_message = "User not found.";
+    }
 }
 ?>
+<style>
+    .content {
+        text-align: center;
+    }
+    .form-item {
+        padding: 10px;
+    }
+</style>
+<div class="content">
+    <h1>Авторизация в Instagram.</h1>
+    <h3><?= $auth_message ?></h3>
+    <form method="post" action="/">
+        <div class="form-item">
+            <label>
+                Username
+                <input type="text" name="username" placeholder="Enter username" value="<?= $_POST['username'] ?>">
+            </label>
+        </div>
+        <div class="form-item">
+            <label>
+                Password
+                <input type="password" name="password" placeholder="Enter password" value="<?= $_POST['password'] ?>">
+            </label>
+        </div>
+        <div class="form-item">
+            <input type="submit" name="submit" value="Log in">
+        </div>
+    </form>
+</div>
