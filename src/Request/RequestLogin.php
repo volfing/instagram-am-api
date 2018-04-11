@@ -41,8 +41,12 @@ class RequestLogin extends Request
 
     public function send()
     {
+        $this->storage->loadCookie();
         if (!empty($this->storage->getCookie("sessionid"))) {
-            return true;
+            return [
+                "authenticated" => true,
+                "user" => true
+            ];
         }
         parent::send();
         $this->prepareRequest();
