@@ -37,13 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         <div class="form-item">
             <label>
                 Username
-                <input type="text" name="username" placeholder="Enter username" value="<?= $_POST['username'] ?>">
+                <input type="text" name="username" placeholder="Enter username" value="<?=!empty($_POST['username']) ? $_POST['username'] : '' ?>">
             </label>
         </div>
         <div class="form-item">
             <label>
                 Password
-                <input type="password" name="password" placeholder="Enter password" value="<?= $_POST['password'] ?>">
+                <input type="password" name="password" placeholder="Enter password" value="<?=!empty($_POST['password']) ? $_POST['password'] : '' ?>">
             </label>
         </div>
         <div class="form-item">
