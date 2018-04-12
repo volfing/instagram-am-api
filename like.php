@@ -13,7 +13,25 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
     $instagram->login($username, $password);
-    $instagram->like($_POST["media_id"]);
+    $mediaIDS = array(
+        "1742667399201505216",
+        "1741205546457866496",
+        "1733248101509917377",
+        "1730328513117689203",
+        "1726698797793153939",
+        "1723881243403931202",
+        "1720208695646566280",
+        "1717403789231472235",
+        "1714569002586272529",
+        "1714478104846419701",
+    );
+
+    foreach ($mediaIDS as $id){
+        $instagram->like($id);
+        echo "<br>";
+        usleep(20);
+    }
+
 }
 ?>
 <style>

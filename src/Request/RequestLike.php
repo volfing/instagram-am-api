@@ -24,7 +24,7 @@ class RequestLike extends Request
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
-            "Cookie: rur=FTW; csrftoken=" . $this->storage->getCookie("csrftoken") . "; mid=" . $this->storage->getCookie("mid") . "; ig_vw=1915; ig_pr=1; ig_vh=937",
+            "Cookie: rur=FTW; csrftoken=" . $this->storage->getCookie("csrftoken") . "; mid=" . $this->storage->getCookie("mid") . "; ig_vw=1915; ig_pr=1; ig_vh=937; sessionid=" . $this->storage->getCookie("sessionid") . "; ds_user_id=" . $this->storage->getCookie("ds_user_id"),
             "Referer: https://www.instagram.com/",
             "x-csrftoken: " . $this->storage->getCookie("csrftoken"),
             "x-instagram-ajax: 1",
