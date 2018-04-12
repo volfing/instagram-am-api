@@ -14,7 +14,7 @@ namespace InstagramAmAPI\Storage;
  * Class CookieHelper
  * @package InstagramAmAPI\Storage
  */
-class CookieHelper
+class CookieManager
 {
     private $cookie_file;
     private $cookie_data;
@@ -87,5 +87,19 @@ class CookieHelper
     public function getCookieString()
     {
         return json_encode($this->cookie_data);
+    }
+
+    /**
+     * Сохраняет куки из curl
+     *
+     * @param $cookie
+     */
+    public function saveCurlCookie($cookie)
+    {
+        foreach ($cookie as $cookie_str) {
+            $cookie_parts = explode("	", $cookie_str);
+            $this->setCookie($cookie_parts[5], $cookie_parts[6]);
+        }
+        $this->saveCookie();
     }
 }

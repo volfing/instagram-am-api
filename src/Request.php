@@ -8,13 +8,13 @@
 
 namespace InstagramAmAPI;
 
-use InstagramAmAPI\Storage\CookieHelper;
 
 /**
  * Class Request
  * @property array $data
+ * @property array $headers
  * @property $curl
- * @property CookieHelper $storage
+ * @property Client $client
  * @package InstagramAmAPI
  */
 class Request
@@ -22,40 +22,108 @@ class Request
     protected $instagram_url = "https://instagram.com";
     protected $curl;
     protected $data;
-    protected $storage = [];
+    private $headers;
+    protected $client;
 
-    public function __construct($data = [])
+    /**
+     * Request constructor.
+     * @param Client $client
+     * @param array $data
+     */
+    public function __construct($client, $data = [])
     {
         $this->curl = null;
         $this->data = $data;
-        $this->storage = new CookieHelper();
+        $this->headers = false;
+        $this->client = $client;
+
     }
 
-
-    public function prepareRequest()
+    /**
+     * Создание curl подключения
+     *
+     * @param string $url
+     *
+     */
+    protected function init($url = "")
     {
-
-        $this->storage->loadCookie();
-        $this->curl = curl_init($this->instagram_url);
-        curl_setopt($this->curl, CURLOPT_HEADER, false);
+        $this->client->cookie->loadCookie();
+        $full_url = $this->instagram_url . $url;
+        $this->curl = curl_init($full_url);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
 
     }
 
     /**
-     * @return Response
+     * Установка нужных заголовков
+     */
+    protected function initHeaders()
+    {
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->headers);
+    }
+
+    /**
+     * @param null|array $data
+     */
+    protected function setPost($data = null)
+    {
+        if (!empty($data)) {
+            curl_setopt($this->curl, CURLOPT_POST, true);
+            curl_setopt($this->curl, CURLOPT_POSTFIELDS, http_build_query($data));
+        }
+    }
+
+    /**
+     * Действия перед отправкой запроса
+     */
+    protected function preRequest()
+    {
+        //        some code
+    }
+
+
+    /**
+     * Действия после отправки запроса
+     */
+    protected function postRequest()
+    {
+        //        some code
+    }
+
+
+    /**
+     * Сохраняем куки
+     */
+    protected function saveCookie()
+    {
+        $cookie = curl_getinfo($this->curl, CURLINFO_COOKIELIST);
+        $this->client->cookie->saveCurlCookie($cookie);
+    }
+
+    /**
+     * @param array $headers
+     */
+    public function setHeaders($headers)
+    {
+        $this->headers = $headers;
+    }
+
+    /**
+     * Шаблонный метод
+     *
+     * @return array
      */
     public function send()
     {
-        $this->prepareRequest();
+        $this->init();
+        $this->preRequest();
+        $this->initHeaders();
         $result = curl_exec($this->curl);
-        $cookie = curl_getinfo($this->curl, CURLINFO_COOKIELIST);
-        foreach ($cookie as $cookie_str) {
-            $cookie_parts = explode("	", $cookie_str);
-            $this->storage->setCookie($cookie_parts[5], $cookie_parts[6]);
-        }
-        $this->storage->saveCookie();
+        $this->saveCookie();
+        $this->postRequest();
+        $result = json_decode($result, true);
+        return $result;
 
     }
 
@@ -65,15 +133,5 @@ class Request
             curl_close($this->curl);
         }
     }
-
-    /**
-     * @param mixed $cookie_file
-     */
-    public function setCookieFile($cookie_file)
-    {
-        $this->storage->setCookieFile($cookie_file);
-
-    }
-
 
 }

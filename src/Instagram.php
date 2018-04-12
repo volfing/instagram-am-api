@@ -13,11 +13,25 @@ use InstagramAmAPI\Request\RequestLogin;
 
 /**
  * Class Instagram
+ * @property Client $client
+ * @property $account
+ * @property $media
+ * @property $explore
  * @package InstagramAmAPI
  */
 class Instagram
 {
-    private $username;
+    private $client;
+
+    public function __construct()
+    {
+//        TODO: добавить инициализацию полей account, media, explore
+//        $this->account = new RequestAccount();
+//        $this->media = new RequestMedia();
+//        $this->explore = new RequestExplore();
+    }
+
+
     /**
      * @param $login
      * @param $password
@@ -26,8 +40,6 @@ class Instagram
      */
     public function login($login, $password, $force = false)
     {
-        $this->username = $login;
-
         return $this->_login($login, $password, $force);
     }
 
@@ -35,24 +47,31 @@ class Instagram
      * @param $login
      * @param $password
      * @param $force
-     * @return bool
+     * @return array|bool
      */
     private function _login($login, $password, $force)
     {
-        $request = new RequestLogin([
+        $this->client = new Client($login, $password);
+        if ($this->client->isLogged() && !$force) {
+            return true;
+        }
+        $request = new RequestLogin($this->client, [
             "username" => $login,
             "password" => $password
         ]);
-        $request->setCookieFile($login);
         $response = $request->send();
         return $response;
 
     }
 
-    public function like($mediaID){
-        $request = new RequestLike();
-        $request->setCookieFile($this->username);
+    /**
+     * @param $mediaID
+     */
+    public function like($mediaID)
+    {
+        $request = new RequestLike($this->client);
         $res = $request->like($mediaID);
+        return $res;
     }
 
 }
