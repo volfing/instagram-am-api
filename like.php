@@ -27,7 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     );
 
     foreach ($mediaIDS as $id){
-        $instagram->like($id);
+        $result = $instagram->media->like($id);
+        if ($result) {
+            echo "<p>like</p>";
+        } else {
+            echo "<p>error</p>";
+        }
         echo "<br>";
         usleep(20);
     }

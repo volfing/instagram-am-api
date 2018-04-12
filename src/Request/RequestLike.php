@@ -31,12 +31,14 @@ class RequestLike extends AuthorizedRequest
     {
 
         parent::init("/web/likes/" . $this->mediaID . "/like/");
+        curl_setopt($this->curl, CURLOPT_POST, true);
+        curl_setopt($this->curl, CURLOPT_POSTFIELDS, http_build_query($this->data));
     }
 
 
     public function like($mediaID)
     {
         $this->mediaID = $mediaID;
-        parent::send();
+        return parent::send();
     }
 }

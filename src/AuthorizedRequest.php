@@ -25,9 +25,8 @@ class AuthorizedRequest extends Request
     public function __construct(Client $client, array $data = [])
     {
         parent::__construct($client, $data);
-
         $this->setHeaders([
-            "Cookie: rur=" . $this->client->cookie->getCookie("rur") . "; csrftoken=" . $this->client->cookie->getCookie("csrftoken") . "; mid=" . $this->client->cookie->getCookie("mid") . "; ig_vw=1915; ig_pr=1; ig_vh=937; sessionid=" . $this->client->cookie->getCookie("sessionid") . "; ds_user_id=" . $this->client->cookie->getCookie("ds_user_id"),
+            "Cookie: rur=" . $this->client->cookie->getCookie("rur") . "; csrftoken=" . $this->client->cookie->getCookie("csrftoken") . "; mid=" . $this->client->cookie->getCookie("mid") . "; sessionid=" . $this->client->cookie->getCookie("sessionid") . "; ds_user_id=" . $this->client->cookie->getCookie("ds_user_id"),
             "Referer: https://www.instagram.com/",
             "x-csrftoken: " . $this->client->cookie->getCookie("csrftoken"),
             "x-instagram-ajax: 1",

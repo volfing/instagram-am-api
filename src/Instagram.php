@@ -8,15 +8,17 @@
 
 namespace InstagramAmAPI;
 
-use InstagramAmAPI\Request\RequestLike;
+use InstagramAmAPI\Request\Account;
+use InstagramAmAPI\Request\Explore;
+use InstagramAmAPI\Request\Media;
 use InstagramAmAPI\Request\RequestLogin;
 
 /**
  * Class Instagram
  * @property Client $client
- * @property $account
- * @property $media
- * @property $explore
+ * @property Account $account
+ * @property Media $media
+ * @property Explore $explore
  * @package InstagramAmAPI
  */
 class Instagram
@@ -25,10 +27,7 @@ class Instagram
 
     public function __construct()
     {
-//        TODO: добавить инициализацию полей account, media, explore
-//        $this->account = new RequestAccount();
-//        $this->media = new RequestMedia();
-//        $this->explore = new RequestExplore();
+        $this->initSubmodules();
     }
 
 
@@ -52,6 +51,7 @@ class Instagram
     private function _login($login, $password, $force)
     {
         $this->client = new Client($login, $password);
+        $this->initSubmodules();
         if ($this->client->isLogged() && !$force) {
             return true;
         }
@@ -64,14 +64,11 @@ class Instagram
 
     }
 
-    /**
-     * @param $mediaID
-     */
-    public function like($mediaID)
+    private function initSubmodules()
     {
-        $request = new RequestLike($this->client);
-        $res = $request->like($mediaID);
-        return $res;
+        $this->account = new Account($this->client);
+        $this->media = new Media($this->client);
+        $this->explore = new Explore($this->client);
     }
 
 }

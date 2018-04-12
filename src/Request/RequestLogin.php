@@ -9,13 +9,13 @@
 namespace InstagramAmAPI\Request;
 
 
-use InstagramAmAPI\Request;
+use InstagramAmAPI\Request as BaseRequest;
 
 /**
  * Class RequestLogin
  * @package InstagramAmAPI\Request
  */
-class RequestLogin extends Request
+class RequestLogin extends BaseRequest
 {
     private $login_url = "/accounts/login/ajax/";
 
@@ -35,7 +35,7 @@ class RequestLogin extends Request
 
     public function send()
     {
-        $emptyRequest = new Request($this->client);
+        $emptyRequest = new BaseRequest($this->client);
         $emptyRequest->send();
         return parent::send();
     }
