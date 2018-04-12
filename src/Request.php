@@ -8,13 +8,13 @@
 
 namespace InstagramAmAPI;
 
-use InstagramAmAPI\Storage\CookieHelper;
+use InstagramAmAPI\Storage\CookieManager;
 
 /**
  * Class Request
  * @property array $data
  * @property $curl
- * @property CookieHelper $storage
+ * @property Client $client
  * @package InstagramAmAPI
  */
 class Request
@@ -22,20 +22,24 @@ class Request
     protected $instagram_url = "https://instagram.com";
     protected $curl;
     protected $data;
-    protected $storage = [];
+    protected $client;
 
-    public function __construct($data = [])
+    /**
+     * Request constructor.
+     * @param Client $client
+     * @param array $data
+     */
+    public function __construct($client, $data = [])
     {
         $this->curl = null;
         $this->data = $data;
-        $this->storage = new CookieHelper();
+        $this->client = $client;
     }
 
 
     public function prepareRequest()
     {
 
-        $this->storage->loadCookie();
         $this->curl = curl_init($this->instagram_url);
         curl_setopt($this->curl, CURLOPT_HEADER, false);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
@@ -51,11 +55,7 @@ class Request
         $this->prepareRequest();
         $result = curl_exec($this->curl);
         $cookie = curl_getinfo($this->curl, CURLINFO_COOKIELIST);
-        foreach ($cookie as $cookie_str) {
-            $cookie_parts = explode("	", $cookie_str);
-            $this->storage->setCookie($cookie_parts[5], $cookie_parts[6]);
-        }
-        $this->storage->saveCookie();
+        $this->client->cookie->saveCurlCookie($cookie);
 
     }
 
@@ -64,15 +64,6 @@ class Request
         if (!is_null($this->curl)) {
             curl_close($this->curl);
         }
-    }
-
-    /**
-     * @param mixed $cookie_file
-     */
-    public function setCookieFile($cookie_file)
-    {
-        $this->storage->setCookieFile($cookie_file);
-
     }
 
 

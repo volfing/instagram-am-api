@@ -21,16 +21,15 @@ class RequestLogin extends Request
 
     public function prepareRequest()
     {
-        $this->storage->loadCookie();
         $this->curl = curl_init($this->instagram_url . $this->login_url);
         curl_setopt($this->curl, CURLOPT_POST, true);
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, http_build_query($this->data));
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
-            "Cookie: rur=FTW; csrftoken=" . $this->storage->getCookie("csrftoken") . "; mid=" . $this->storage->getCookie("mid") . "; ig_vw=1915; ig_pr=1; ig_vh=937",
+            "Cookie: rur=" . $this->client->cookie->getCookie("rur") . "; csrftoken=" . $this->client->cookie->getCookie("csrftoken") . "; mid=" . $this->client->cookie->getCookie("mid") . "; ig_vw=1915; ig_pr=1; ig_vh=937",
             "Referer: https://www.instagram.com/",
-            "x-csrftoken: " . $this->storage->getCookie("csrftoken"),
+            "x-csrftoken: " . $this->client->cookie->getCookie("csrftoken"),
             "x-instagram-ajax: 1",
             "x-requested-with: XMLHttpRequest",
             "Content-Type: application/x-www-form-urlencoded",
@@ -40,8 +39,7 @@ class RequestLogin extends Request
 
     public function send()
     {
-        $this->storage->loadCookie();
-        if (!empty($this->storage->getCookie("sessionid"))) {
+        if (!empty($this->client->cookie->getCookie("sessionid"))) {
             return [
                 "authenticated" => true,
                 "user" => true
@@ -51,12 +49,7 @@ class RequestLogin extends Request
         $this->prepareRequest();
         $result = curl_exec($this->curl);
         $cookie = curl_getinfo($this->curl, CURLINFO_COOKIELIST);
-        foreach ($cookie as $cookie_str) {
-            $cookie_parts = explode("	", $cookie_str);
-            $this->storage->setCookie($cookie_parts[5], $cookie_parts[6]);
-        }
-
-        $this->storage->saveCookie();
+        $this->client->cookie->saveCurlCookie($cookie);
         $result = json_decode($result, true);
         return $result;
 
