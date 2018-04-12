@@ -100,5 +100,6 @@ class CookieManager
             $cookie_parts = explode("	", $cookie_str);
             $this->setCookie($cookie_parts[5], $cookie_parts[6]);
         }
+        $this->saveCookie();
     }
 }

@@ -14,11 +14,24 @@ use InstagramAmAPI\Request\RequestLogin;
 /**
  * Class Instagram
  * @property Client $client
+ * @property $account
+ * @property $media
+ * @property $explore
  * @package InstagramAmAPI
  */
 class Instagram
 {
     private $client;
+
+    public function __construct()
+    {
+//        TODO: добавить инициализацию полей account, media, explore
+//        $this->account = new RequestAccount();
+//        $this->media = new RequestMedia();
+//        $this->explore = new RequestExplore();
+    }
+
+
     /**
      * @param $login
      * @param $password
@@ -34,11 +47,14 @@ class Instagram
      * @param $login
      * @param $password
      * @param $force
-     * @return bool
+     * @return array|bool
      */
     private function _login($login, $password, $force)
     {
         $this->client = new Client($login, $password);
+        if ($this->client->isLogged() && !$force) {
+            return true;
+        }
         $request = new RequestLogin($this->client, [
             "username" => $login,
             "password" => $password
@@ -48,9 +64,14 @@ class Instagram
 
     }
 
-    public function like($mediaID){
+    /**
+     * @param $mediaID
+     */
+    public function like($mediaID)
+    {
         $request = new RequestLike($this->client);
         $res = $request->like($mediaID);
+        return $res;
     }
 
 }

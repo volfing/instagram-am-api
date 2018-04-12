@@ -8,11 +8,11 @@
 
 namespace InstagramAmAPI;
 
-use InstagramAmAPI\Storage\CookieManager;
 
 /**
  * Class Request
  * @property array $data
+ * @property array $headers
  * @property $curl
  * @property Client $client
  * @package InstagramAmAPI
@@ -22,6 +22,7 @@ class Request
     protected $instagram_url = "https://instagram.com";
     protected $curl;
     protected $data;
+    private $headers;
     protected $client;
 
     /**
@@ -33,29 +34,96 @@ class Request
     {
         $this->curl = null;
         $this->data = $data;
+        $this->headers = false;
         $this->client = $client;
+
     }
 
-
-    public function prepareRequest()
+    /**
+     * Создание curl подключения
+     *
+     * @param string $url
+     *
+     */
+    protected function init($url = "")
     {
-
-        $this->curl = curl_init($this->instagram_url);
-        curl_setopt($this->curl, CURLOPT_HEADER, false);
+        $this->client->cookie->loadCookie();
+        $full_url = $this->instagram_url . $url;
+        $this->curl = curl_init($full_url);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
 
     }
 
     /**
-     * @return Response
+     * Установка нужных заголовков
+     */
+    protected function initHeaders()
+    {
+        curl_setopt($this->curl, CURLOPT_HEADER, $this->headers);
+    }
+
+    /**
+     * @param null|array $data
+     */
+    protected function setPost($data = null)
+    {
+        if (!empty($data)) {
+            curl_setopt($this->curl, CURLOPT_POST, true);
+            curl_setopt($this->curl, CURLOPT_POSTFIELDS, http_build_query($data));
+        }
+    }
+
+    /**
+     * Действия перед отправкой запроса
+     */
+    protected function preRequest()
+    {
+        //        some code
+    }
+
+
+    /**
+     * Действия после отправки запроса
+     */
+    protected function postRequest()
+    {
+        //        some code
+    }
+
+
+    /**
+     * Сохраняем куки
+     */
+    protected function saveCookie()
+    {
+        $cookie = curl_getinfo($this->curl, CURLINFO_COOKIELIST);
+        $this->client->cookie->saveCurlCookie($cookie);
+    }
+
+    /**
+     * @param array $headers
+     */
+    public function setHeaders($headers)
+    {
+        $this->headers = $headers;
+    }
+
+    /**
+     * Шаблонный метод
+     *
+     * @return array
      */
     public function send()
     {
-        $this->prepareRequest();
+        $this->init();
+        $this->preRequest();
+        $this->initHeaders();
         $result = curl_exec($this->curl);
-        $cookie = curl_getinfo($this->curl, CURLINFO_COOKIELIST);
-        $this->client->cookie->saveCurlCookie($cookie);
+        $this->saveCookie();
+        $this->postRequest();
+        $result = json_decode($result, true);
+        return $result;
 
     }
 
@@ -65,6 +133,5 @@ class Request
             curl_close($this->curl);
         }
     }
-
 
 }

@@ -53,5 +53,15 @@ class Client
         return $this->proxy;
     }
 
+    /**
+     * Проверка на авторизацию
+     *
+     * @return bool
+     */
+    public function isLogged()
+    {
+        return !empty($this->cookie->getCookie('sessionid'));
+    }
+
 
 }
