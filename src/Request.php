@@ -60,7 +60,7 @@ class Request
      */
     protected function initHeaders()
     {
-        curl_setopt($this->curl, CURLOPT_HEADER, $this->headers);
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->headers);
     }
 
     /**
