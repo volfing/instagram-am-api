@@ -49,7 +49,6 @@ class Request
     {
         $this->client->cookie->loadCookie();
         $full_url = $this->instagram_url . $url;
-        var_dump($full_url);
         $this->curl = curl_init($full_url);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
@@ -61,8 +60,19 @@ class Request
      */
     protected function initHeaders()
     {
-        var_dump($this->headers);
-        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->headers);
+        $result_headers = [];
+        foreach ($this->headers as $key => $value) {
+            if (is_array($value)) {
+                $full_value = "";
+                foreach ($value as $key_inner => $value_inner) {
+                    $full_value .= $key_inner . "=" . $value_inner . "; ";
+                }
+                $result_headers[] = $key . ": " . $full_value;
+            } else {
+                $result_headers[] = $key . ": " . $value;
+            }
+        }
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $result_headers);
     }
 
     /**
