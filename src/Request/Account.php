@@ -16,7 +16,10 @@ class Account extends Request
      */
     public function getById($userID)
     {
-        return;
+        $request = new RequestUserInfoById($this->client, ['id' => $userID]);
+        $response = $request->send();
+        var_dump($response);
+        return $response;
     }
 
     /**
@@ -75,7 +78,8 @@ class Account extends Request
      */
     public function followById($userID)
     {
-        return true;
+        $reques = new RequestFollow($this->client, ['id' => $userID]);
+        return $reques->send();
     }
 
     /*
@@ -87,13 +91,15 @@ class Account extends Request
         return true;
     }
 
-    /*
+    /**
      * Отписка от пользователя по его ID
-     * return boolean
+     * @param int $userID
+     * @return bool|array
      */
     public function unFollowById($userID)
     {
-        return true;
+        $request = new RequestUnfollow($this->client, ['id' => $userID]);
+        return $request->send();
     }
 
     /*
@@ -123,13 +129,15 @@ class Account extends Request
         return true;
     }
 
-    /*
+    /**
      * Получение списка публикаций пользователя по его ID
-     * return Media[]
+     * @return Media[]
      */
     public function loadMediasById($userID, $maxID = null)
     {
-        return;
+        $request = new RequestUserFeed($this->client, ['id' => $userID]);
+//        TODO: обработать данные на выходе в аккуратный массив объектов Media
+        return $request->send();
     }
 
     /*

@@ -142,6 +142,7 @@ class Request
         $this->preRequest();
         $this->initHeaders();
         $result = curl_exec($this->curl);
+        var_dump($result);
         $this->saveCookie();
         $this->postRequest();
         $result = json_decode($result, true);
