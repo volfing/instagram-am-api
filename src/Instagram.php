@@ -8,15 +8,17 @@
 
 namespace InstagramAmAPI;
 
-use InstagramAmAPI\Request\RequestLike;
+use InstagramAmAPI\Request\Account;
+use InstagramAmAPI\Request\Explore;
+use InstagramAmAPI\Request\Media;
 use InstagramAmAPI\Request\RequestLogin;
 
 /**
  * Class Instagram
  * @property Client $client
- * @property $account
- * @property $media
- * @property $explore
+ * @property Account $account
+ * @property Media $media
+ * @property Explore $explore
  * @package InstagramAmAPI
  */
 class Instagram
@@ -25,53 +27,49 @@ class Instagram
 
     public function __construct()
     {
-//        TODO: добавить инициализацию полей account, media, explore
-//        $this->account = new RequestAccount();
-//        $this->media = new RequestMedia();
-//        $this->explore = new RequestExplore();
+        $this->initSubmodules();
     }
 
 
     /**
-     * @param $login
-     * @param $password
      * @param bool $force
      * @return bool
      */
-    public function login($login, $password, $force = false)
+    public function login($force = false)
     {
-        return $this->_login($login, $password, $force);
+        return $this->_login($force);
     }
 
     /**
-     * @param $login
-     * @param $password
      * @param $force
      * @return array|bool
      */
-    private function _login($login, $password, $force)
+    private function _login($force)
     {
-        $this->client = new Client($login, $password);
         if ($this->client->isLogged() && !$force) {
             return true;
         }
         $request = new RequestLogin($this->client, [
-            "username" => $login,
-            "password" => $password
+            "username" => $this->client->getUsername(),
+            "password" => $this->client->getPassword()
         ]);
         $response = $request->send();
         return $response;
 
     }
 
-    /**
-     * @param $mediaID
-     */
-    public function like($mediaID)
+    private function initSubmodules()
     {
-        $request = new RequestLike($this->client);
-        $res = $request->like($mediaID);
-        return $res;
+        $this->account = new Account($this->client);
+        $this->media = new Media($this->client);
+        $this->explore = new Explore($this->client);
+    }
+
+    public function setUser($username, $password)
+    {
+        $this->client = new Client($username, $password);
+        $this->initSubmodules();
+
     }
 
 }

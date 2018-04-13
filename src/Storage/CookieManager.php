@@ -71,7 +71,9 @@ class CookieManager
      */
     public function loadCookie()
     {
-        $this->cookie_data = json_decode(file_get_contents($this->cookie_file), true);
+        if (file_exists($this->cookie_file)) {
+            $this->cookie_data = json_decode(file_get_contents($this->cookie_file), true);
+        }
     }
 
     /**

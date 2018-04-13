@@ -9,20 +9,21 @@
 namespace InstagramAmAPI\Request;
 
 
-use InstagramAmAPI\Request;
+use InstagramAmAPI\Request as BaseRequest;
 
 /**
  * Class RequestLogin
  * @package InstagramAmAPI\Request
  */
-class RequestLogin extends Request
+class RequestLogin extends BaseRequest
 {
     private $login_url = "/accounts/login/ajax/";
 
     protected function init($url = "")
     {
         parent::init($this->login_url);
-        $this->setPost($this->data);
+        $this->setPost(true);
+        $this->setPostData($this->data);
         $this->setHeaders([
             "Cookie: rur=" . $this->client->cookie->getCookie("rur") . "; csrftoken=" . $this->client->cookie->getCookie("csrftoken") . "; mid=" . $this->client->cookie->getCookie("mid") . "; ig_vw=1915; ig_pr=1; ig_vh=937;",
             "Referer: https://www.instagram.com/",
@@ -35,7 +36,7 @@ class RequestLogin extends Request
 
     public function send()
     {
-        $emptyRequest = new Request($this->client);
+        $emptyRequest = new BaseRequest($this->client);
         $emptyRequest->send();
         return parent::send();
     }
