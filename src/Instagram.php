@@ -32,32 +32,26 @@ class Instagram
 
 
     /**
-     * @param $login
-     * @param $password
      * @param bool $force
      * @return bool
      */
-    public function login($login, $password, $force = false)
+    public function login($force = false)
     {
-        return $this->_login($login, $password, $force);
+        return $this->_login($force);
     }
 
     /**
-     * @param $login
-     * @param $password
      * @param $force
      * @return array|bool
      */
-    private function _login($login, $password, $force)
+    private function _login($force)
     {
-        $this->client = new Client($login, $password);
-        $this->initSubmodules();
         if ($this->client->isLogged() && !$force) {
             return true;
         }
         $request = new RequestLogin($this->client, [
-            "username" => $login,
-            "password" => $password
+            "username" => $this->client->getUsername(),
+            "password" => $this->client->getPassword()
         ]);
         $response = $request->send();
         return $response;
@@ -69,6 +63,13 @@ class Instagram
         $this->account = new Account($this->client);
         $this->media = new Media($this->client);
         $this->explore = new Explore($this->client);
+    }
+
+    public function setUser($username, $password)
+    {
+        $this->client = new Client($username, $password);
+        $this->initSubmodules();
+
     }
 
 }

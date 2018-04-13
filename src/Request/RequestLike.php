@@ -24,15 +24,14 @@ class RequestLike extends AuthorizedRequest
     public function __construct(Client $client, array $data = [])
     {
         parent::__construct($client, $data);
-
     }
 
     protected function init($url = "")
     {
 
         parent::init("/web/likes/" . $this->mediaID . "/like/");
-        curl_setopt($this->curl, CURLOPT_POST, true);
-        curl_setopt($this->curl, CURLOPT_POSTFIELDS, http_build_query($this->data));
+        $this->setPost(true);
+        $this->setPostData($this->data);
     }
 
 

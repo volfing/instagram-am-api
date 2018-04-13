@@ -63,5 +63,15 @@ class Client
         return !empty($this->cookie->getCookie('sessionid'));
     }
 
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
 
 }

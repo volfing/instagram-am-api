@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $instagram = new Instagram();
     $username = $_POST['username'];
     $password = $_POST['password'];
-    $res = $instagram->login($username, $password);
+    $instagram->setUser($username, $password);
+    $res = $instagram->login();
     if ($res['authenticated']) {
         $auth_message = "Success auth.";
     } elseif ($res['user']) {

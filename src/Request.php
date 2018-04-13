@@ -49,6 +49,7 @@ class Request
     {
         $this->client->cookie->loadCookie();
         $full_url = $this->instagram_url . $url;
+        var_dump($full_url);
         $this->curl = curl_init($full_url);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
@@ -60,16 +61,27 @@ class Request
      */
     protected function initHeaders()
     {
+        var_dump($this->headers);
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->headers);
     }
 
     /**
-     * @param null|array $data
+     * @param bool $post_flag
      */
-    protected function setPost($data = null)
+    protected function setPost($post_flag)
+    {
+        if ($post_flag) {
+            curl_setopt($this->curl, CURLOPT_POST, true);
+        }
+    }
+
+
+    /**
+     * @param array $data
+     */
+    protected function setPostData($data)
     {
         if (!empty($data)) {
-            curl_setopt($this->curl, CURLOPT_POST, true);
             curl_setopt($this->curl, CURLOPT_POSTFIELDS, http_build_query($data));
         }
     }
