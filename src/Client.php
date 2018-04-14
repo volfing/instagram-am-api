@@ -73,5 +73,18 @@ class Client
         return $this->password;
     }
 
+    /**
+     * Возвращает id аутентифицированного пользователя
+     *
+     * @return mixed|null
+     */
+    public function authenticatedUserId()
+    {
+        if (!empty($this->cookie->getCookie("ds_user_id"))) {
+            return $this->cookie->getCookie("ds_user_id");
+        }
+        return null;
+    }
+
 
 }

@@ -10,9 +10,9 @@ namespace InstagramAmAPI\Request;
 
 class Account extends Request
 {
-    /*
+    /**
      * Получение информации об instagram аккаунте по его ID
-     * return Account
+     * @return Account|array
      */
     public function getById($userID)
     {

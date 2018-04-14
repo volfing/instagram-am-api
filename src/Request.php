@@ -8,6 +8,10 @@
 
 namespace InstagramAmAPI;
 
+use InstagramAmAPI\Exception\InstagramException;
+use InstagramAmAPI\Exception\ForbiddenInstagramException;
+use InstagramAmAPI\Exception\NotFoundInstagramException;
+
 
 /**
  * Class Request
@@ -126,15 +130,62 @@ class Request
     /**
      * @param array $headers
      */
-    public function setHeaders($headers)
+    protected function setHeaders($headers)
     {
         $this->headers = $headers;
     }
 
     /**
-     * Шаблонный метод
+     * Добавляет заголовок
      *
+     * @param $header_name
+     * @param $header_value
+     */
+    protected function addHeader($header_name, $header_value)
+    {
+        $this->headers[$header_name] = $header_value;
+    }
+
+    /**
+     * Подписывает запрос
+     *
+     * @param array $query
+     * @param string $url
+     * @param null|string $endpoint
+     * @return null
+     */
+    protected function addQuerySignature($query, $url, $endpoint = null)
+    {
+        if (
+            !empty($this->client->cookie->getCookie("rhx_gis"))
+            && !empty($this->headers['query_hash'])
+            && !empty($this->headers['variables'])
+        ) {
+            $variables = $this->headers['variables'];
+        } elseif (
+            !empty($this->client->cookie->getCookie("rhx_gis"))
+            && in_array("__a", $query)
+            && $endpoint
+        ) {
+//            TODO: добавить реализацию
+//            variables = compat_urllib_parse_urlparse(endpoint).path
+        } else {
+            return false;
+        }
+        $signature = md5($this->client->cookie->getCookie('rhx_gis') . ":" . $this->client->cookie->getCookie('csfrtoken') . ":" . $variables);
+        if (!empty($signature)) {
+            $this->addHeader("X-Instagram-GIS", $signature);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Шаблонный метод
      * @return array
+     * @throws InstagramException
+     * @throws ForbiddenInstagramException
+     * @throws NotFoundInstagramException
      */
     public function send()
     {
@@ -143,6 +194,22 @@ class Request
         $this->initHeaders();
         $result = curl_exec($this->curl);
         var_dump($result);
+        $http_code = curl_getinfo($this->curl)['http_code'];
+        switch ($http_code) {
+            case 200:
+//                ok
+                break;
+            case 403:
+                throw new ForbiddenInstagramException();
+                break;
+            case 404:
+                throw new NotFoundInstagramException();
+                break;
+            default:
+                throw new InstagramException();
+                break;
+
+        }
         $this->saveCookie();
         $this->postRequest();
         $result = json_decode($result, true);
