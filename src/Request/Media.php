@@ -47,23 +47,31 @@ class Media extends Request
      */
     public function comment($message, $mediaID)
     {
-        $request = new RequestMediaComment([
+        $request = new RequestMediaComment($this->client, [
             'message' => $message,
             'id' => $mediaID
         ]);
-        $request->send();
-        return 1;
+        $result = $request->send();
+        return $result['id'];
     }
 
     /**
      * Удаление комментария под публикацией
-     * @param string $message
      * @param string $mediaID
+     * @param string $commentID
      * @return bool
      */
-    public function removeComment($message, $mediaID)
+    public function removeComment($mediaID, $commentID)
     {
-        return true;
+        $request = new RequestMediaDeleteComment($this->client, [
+            'id' => $mediaID,
+            'comment_id' => $commentID
+        ]);
+        $result = $request->send();
+        if ($result['status'] == 'ok') {
+            return true;
+        }
+        return false;
     }
 
     /**
