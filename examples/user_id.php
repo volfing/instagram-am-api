@@ -2,12 +2,12 @@
 /**
  * Created by PhpStorm.
  * User: Anton Vasiliev <bysslaev@gmail.com>
- * Date: 13/04/2018
- * Time: 01:39
+ * Date: 14/04/2018
+ * Time: 00:52
  */
 
 
-include __DIR__ . "/autoload.php";
+include __DIR__ . "/../autoload.php";
 
 use InstagramAmAPI\Instagram;
 
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $password = $_POST['password'];
     $instagram->setUser($username, $password);
 
-    $result = $instagram->account->getByUsername($_POST['username_search']);
+    $result = $instagram->account->getById($_POST['username_search']);
     echo "<pre>";
     print_r($result);
     echo "</pre><br>";
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <div class="content">
     <h1>Авторизация в Instagram.</h1>
     <h3><?= $auth_message ?></h3>
-    <form method="post" action="/user.php">
+    <form method="post">
         <div class="form-item">
             <label>
                 Username

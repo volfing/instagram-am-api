@@ -3,7 +3,7 @@
 /*echo file_get_contents('https://www.instagram.com/challenge/5955709178/Kzt1xNU0co/');
 exit;*/
 
-include __DIR__ . "/autoload.php";
+include __DIR__ . "/../autoload.php";
 
 use InstagramAmAPI\Instagram;
 
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <div class="content">
     <h1>Авторизация в Instagram.</h1>
     <h3><?= $auth_message ?></h3>
-    <form method="post" action="/">
+    <form method="post">
         <div class="form-item">
             <label>
                 Username

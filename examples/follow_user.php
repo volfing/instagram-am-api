@@ -1,9 +1,13 @@
-<?
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Anton Vasiliev <bysslaev@gmail.com>
+ * Date: 14/04/2018
+ * Time: 01:11
+ */
 
-/*echo file_get_contents('https://www.instagram.com/challenge/5955709178/Kzt1xNU0co/');
-exit;*/
 
-include __DIR__ . "/autoload.php";
+include __DIR__ . "/../autoload.php";
 
 use InstagramAmAPI\Instagram;
 
@@ -14,29 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $password = $_POST['password'];
     $instagram->setUser($username, $password);
     $instagram->login();
-    $mediaIDS = array(
-        "1742667399201505216",
-        "1741205546457866496",
-        "1733248101509917377",
-        "1730328513117689203",
-        "1726698797793153939",
-        "1723881243403931202",
-        "1720208695646566280",
-        "1717403789231472235",
-        "1714569002586272529",
-        "1714478104846419701",
-    );
-
-    foreach ($mediaIDS as $id) {
-        $result = $instagram->media->like($id);
-        if ($result) {
-            echo "<p>like</p>";
-        } else {
-            echo "<p>error</p>";
-        }
-        echo "<br>";
-        usleep(20);
+    if (isset($_POST['follow'])) {
+        $result = $instagram->account->followById($_POST['username_search']);
+    } elseif (isset($_POST['unfollow'])) {
+        $result = $instagram->account->unFollowById($_POST['username_search']);
     }
+    echo "<pre>";
+    print_r($result);
+    echo "</pre><br>";
 
 }
 ?>
@@ -52,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <div class="content">
     <h1>Авторизация в Instagram.</h1>
     <h3><?= $auth_message ?></h3>
-    <form method="post" action="/like.php">
+    <form method="post">
         <div class="form-item">
             <label>
                 Username
@@ -69,13 +58,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         </div>
         <div class="form-item">
             <label>
-                Media ID
-                <input type="text" name="media_id" placeholder="Enter media ID"
-                       value="<?= !empty($_POST['media_id']) ? $_POST['media_id'] : '' ?>">
+                Username search
+                <input type="text" name="username_search" placeholder="Enter Username for search"
+                       value="<?= !empty($_POST['username_search']) ? $_POST['username_search'] : '' ?>">
             </label>
         </div>
         <div class="form-item">
-            <input type="submit" name="submit" value="LIKE">
+            <input type="submit" name="follow" value="follow">
+            <input type="submit" name="unfollow" value="unfollow">
         </div>
     </form>
 </div>

@@ -26,7 +26,7 @@ class RequestLike extends AuthorizedRequest
         parent::__construct($client, $data);
     }
 
-    protected function init($url = "")
+    protected function init($url = "", $params = null)
     {
 
         parent::init("/web/likes/" . $this->mediaID . "/like/");

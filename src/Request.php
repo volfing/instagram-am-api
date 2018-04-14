@@ -8,6 +8,10 @@
 
 namespace InstagramAmAPI;
 
+use InstagramAmAPI\Exception\InstagramException;
+use InstagramAmAPI\Exception\ForbiddenInstagramException;
+use InstagramAmAPI\Exception\NotFoundInstagramException;
+
 
 /**
  * Class Request
@@ -20,6 +24,10 @@ namespace InstagramAmAPI;
 class Request
 {
     protected $instagram_url = "https://instagram.com";
+
+    const API_URL = 'https://www.instagram.com/query/';
+    const GRAPHQL_API_URL = 'https://www.instagram.com/graphql/query/';
+
     protected $curl;
     protected $data;
     private $headers;
@@ -45,10 +53,18 @@ class Request
      * @param string $url
      *
      */
-    protected function init($url = "")
+    protected function init($url = "", $params = null)
     {
         $this->client->cookie->loadCookie();
         $full_url = $this->instagram_url . $url;
+        if (!is_null($params)) {
+            $full_url .= "?";
+            foreach ($params as $param_key => $param_value) {
+                $params[$param_key] = $param_key . "=" . $param_value;
+            }
+            var_dump($params);
+            $full_url .= implode("&", $params);
+        }
         var_dump($full_url);
         $this->curl = curl_init($full_url);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
@@ -61,8 +77,22 @@ class Request
      */
     protected function initHeaders()
     {
-        var_dump($this->headers);
-        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->headers);
+        /** Удаляем пустые заголовки */
+        $this->headers = array_filter($this->headers);
+
+        $result_headers = [];
+        foreach ($this->headers as $key => $value) {
+            if (is_array($value)) {
+                $full_value = "";
+                foreach ($value as $key_inner => $value_inner) {
+                    $full_value .= $key_inner . "=" . $value_inner . "; ";
+                }
+                $result_headers[] = $key . ": " . $full_value;
+            } else {
+                $result_headers[] = $key . ": " . $value;
+            }
+        }
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $result_headers);
     }
 
     /**
@@ -116,15 +146,61 @@ class Request
     /**
      * @param array $headers
      */
-    public function setHeaders($headers)
+    protected function setHeaders($headers)
     {
         $this->headers = $headers;
     }
 
     /**
-     * Шаблонный метод
+     * Добавляет заголовок
      *
+     * @param $header_name
+     * @param $header_value
+     */
+    protected function addHeader($header_name, $header_value)
+    {
+        $this->headers[$header_name] = $header_value;
+    }
+
+    /**
+     * Подписывает запрос
+     *
+     * @param array $query
+     * @param null|string $endpoint
+     * @return null
+     */
+    protected function addQuerySignature($query, $endpoint = null)
+    {
+        if (
+            !empty($this->client->cookie->getCookie("rhx_gis"))
+            && !empty($query['query_hash'])
+            && !empty($query['variables'])
+        ) {
+            $variables = $query['variables'];
+        } elseif (
+            !empty($this->client->cookie->getCookie("rhx_gis"))
+            && in_array("__a", $query)
+            && $endpoint
+        ) {
+//            TODO: добавить реализацию
+//            variables = compat_urllib_parse_urlparse(endpoint).path
+        } else {
+            return false;
+        }
+        $signature = md5($this->client->cookie->getCookie('rhx_gis') . ":" . $this->client->cookie->getCookie('csfrtoken') . ":" . $variables);
+        if (!empty($signature)) {
+            $this->addHeader("X-Instagram-GIS", $signature);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Шаблонный метод
      * @return array
+     * @throws InstagramException
+     * @throws ForbiddenInstagramException
+     * @throws NotFoundInstagramException
      */
     public function send()
     {
@@ -132,6 +208,23 @@ class Request
         $this->preRequest();
         $this->initHeaders();
         $result = curl_exec($this->curl);
+        var_dump($result);
+        $http_code = curl_getinfo($this->curl)['http_code'];
+        switch ($http_code) {
+            case 200:
+//                ok
+                break;
+            case 403:
+                throw new ForbiddenInstagramException();
+                break;
+            case 404:
+                throw new NotFoundInstagramException();
+                break;
+            default:
+                throw new InstagramException();
+                break;
+
+        }
         $this->saveCookie();
         $this->postRequest();
         $result = json_decode($result, true);
