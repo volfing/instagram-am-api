@@ -1,0 +1,19 @@
+{
+  "name": "volfing/instagram-am-api",
+  "description": "Instagram web API library",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "shmax",
+      "email": "shmax@gmail.com"
+    },
+    {
+      "name": "Anton Vasilev",
+      "email": "bysslaev@gmail.com"
+    }
+  ],
+  "require": {
+    "lazyjsonmapper/lazyjsonmapper": "^1.6.1"
+  }
+}
