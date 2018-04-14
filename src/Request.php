@@ -24,6 +24,10 @@ use InstagramAmAPI\Exception\NotFoundInstagramException;
 class Request
 {
     protected $instagram_url = "https://instagram.com";
+
+    const API_URL = 'https://www.instagram.com/query/';
+    const GRAPHQL_API_URL = 'https://www.instagram.com/graphql/query/';
+
     protected $curl;
     protected $data;
     private $headers;
@@ -49,10 +53,19 @@ class Request
      * @param string $url
      *
      */
-    protected function init($url = "")
+    protected function init($url = "", $params = null)
     {
         $this->client->cookie->loadCookie();
         $full_url = $this->instagram_url . $url;
+        if (!is_null($params)) {
+            $full_url .= "?";
+            foreach ($params as $param_key => $param_value) {
+                $params[$param_key] = $param_key . "=" . $param_value;
+            }
+            var_dump($params);
+            $full_url .= implode("&", $params);
+        }
+        var_dump($full_url);
         $this->curl = curl_init($full_url);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
@@ -64,6 +77,9 @@ class Request
      */
     protected function initHeaders()
     {
+        /** Удаляем пустые заголовки */
+        $this->headers = array_filter($this->headers);
+
         $result_headers = [];
         foreach ($this->headers as $key => $value) {
             if (is_array($value)) {
@@ -150,18 +166,17 @@ class Request
      * Подписывает запрос
      *
      * @param array $query
-     * @param string $url
      * @param null|string $endpoint
      * @return null
      */
-    protected function addQuerySignature($query, $url, $endpoint = null)
+    protected function addQuerySignature($query, $endpoint = null)
     {
         if (
             !empty($this->client->cookie->getCookie("rhx_gis"))
-            && !empty($this->headers['query_hash'])
-            && !empty($this->headers['variables'])
+            && !empty($query['query_hash'])
+            && !empty($query['variables'])
         ) {
-            $variables = $this->headers['variables'];
+            $variables = $query['variables'];
         } elseif (
             !empty($this->client->cookie->getCookie("rhx_gis"))
             && in_array("__a", $query)

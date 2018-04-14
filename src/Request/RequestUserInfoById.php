@@ -13,9 +13,13 @@ use InstagramAmAPI\AuthorizedRequest;
 
 class RequestUserInfoById extends AuthorizedRequest
 {
-    protected function init($url = "")
+    protected function init($url = "", $params = null)
     {
-        parent::init("/graphql/query/?query_hash=" . QueryProperty::QUERY_HASH_REELS_TRAY . "&variables=%7B\"id\":\"" . $this->data['id'] . "\",\"first\":1%7D");
+        $this->instagram_url = self::GRAPHQL_API_URL;
+        $params = [
+            "q" => "ig_user(" . $this->data['id'] . ") {id, username, full_name, profile_pic_url, biography, external_url, is_private, is_verified, media {count}, followed_by {count}, follows {count} }"
+        ];
+        parent::init($url, $params);
     }
 
 }

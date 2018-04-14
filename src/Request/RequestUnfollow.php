@@ -17,7 +17,7 @@ use InstagramAmAPI\AuthorizedRequest;
  */
 class RequestUnfollow extends AuthorizedRequest
 {
-    protected function init($url = "")
+    protected function init($url = "", $params = null)
     {
         parent::init("/web/friendships/" . $this->data['id'] . "/unfollow/");
         $this->setPost(true);

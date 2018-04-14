@@ -21,35 +21,23 @@ class RequestUserInfo extends AuthorizedRequest
     /**
      * @inheritdoc
      */
-    protected function init($url = "")
+    protected function init($url = "", $params = null)
     {
         if (empty($this->data['username'])) {
             throw new \Exception("Empty username.");
         }
         $this->instagram_url = "https://www.instagram.com";
-        parent::init("/" . $this->data['username'] . "/?__a=1");
-//      TODO: Узнать от куда берется X-Instagram-GIS
-        $x_instagram_gis = "";
-        $headers = [
-            "Cookie" => [
-                "mid" => $this->client->cookie->getCookie("mid"),
-                "ig_dru_dismiss" => $this->client->cookie->getCookie("ig_dru_dismiss"),
-                "csrftoken" => $this->client->cookie->getCookie("csrftoken"),
-                "ds_user_id" => $this->client->cookie->getCookie("ds_user_id"),
-                "shbid" => $this->client->cookie->getCookie("shbid"),
-                "rur" => $this->client->cookie->getCookie("rur"),
-                "sessionid" => $this->client->cookie->getCookie("sessionid"),
-                "ig_pr" => 1,
-                "ig_or" => "landscape-primary",
-                "ig_vw" => 1440,
-                "ig_vh" => 297,
-            ],
-            "Referer" => "https://www.instagram.com/" . $this->data['username'] . "/",
-            "x-requested-with" => "XMLHttpRequest",
-            "X-Instagram-GIS" => $x_instagram_gis,
-            "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36",
+
+        $variables = [
+            "__a" => 1
         ];
-        $this->setHeaders($headers);
+        $url = "/" . $this->data['username'] . "/?__a=1";
+        parent::init($url);
+
+        $this->addHeader("Referer", "https://www.instagram.com/" . $this->data['username'] . "/");
+        $this->addQuerySignature([
+            "__a" => 1,
+        ], $this->instagram_url . $url);
     }
 
 

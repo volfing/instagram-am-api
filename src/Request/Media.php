@@ -47,7 +47,12 @@ class Media extends Request
      */
     public function comment($message, $mediaID)
     {
-        return;
+        $request = new RequestMediaComment([
+            'message' => $message,
+            'id' => $mediaID
+        ]);
+        $request->send();
+        return 1;
     }
 
     /**
@@ -64,11 +69,14 @@ class Media extends Request
     /**
      * Получение публикации по ее $mediaID
      * @param $mediaID
-     * @return Media
+     * @return Media|array
      */
     public function getById($mediaID)
     {
-        return;
+        $request = new RequestMediaInfo($this->client, [
+            'id' => $mediaID
+        ]);
+        return $request->send();
     }
 
     /**

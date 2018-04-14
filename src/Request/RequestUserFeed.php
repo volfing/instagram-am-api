@@ -20,9 +20,18 @@ class RequestUserFeed extends AuthorizedRequest
     /**
      * @inheritdoc
      */
-    protected function init($url = "")
+    protected function init($url = "", $params = null)
     {
-        parent::init("/graphql/query/?query_hash=" . QueryProperty::QUERY_HASH_USER . "&variables=%7B\"id\":\"" . $this->data['id'] . "\",\"first\":100%7D");
+        $this->instagram_url = self::GRAPHQL_API_URL;
+        $count_items = 10;
+        if (!empty($this->data['count'])) {
+            $count_items = (int)$this->data['count'];
+        }
+        $params = [
+            "query_hash" => QueryProperty::QUERY_HASH_USER,
+            "variables" => "%7B\"id\":\"" . $this->data['id'] . "\",\"first\":" . $count_items . "%7D"
+        ];
+        parent::init("", $params);
     }
 
 

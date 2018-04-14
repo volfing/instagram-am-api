@@ -18,6 +18,8 @@ use InstagramAmAPI\Storage\CookieManager;
  */
 class Client
 {
+    const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36";
+
     private $proxy;
     private $username;
     private $password;
@@ -84,6 +86,11 @@ class Client
             return $this->cookie->getCookie("ds_user_id");
         }
         return null;
+    }
+
+    public function getUserAgent()
+    {
+        return self::USER_AGENT;
     }
 
 

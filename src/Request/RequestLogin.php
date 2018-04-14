@@ -19,7 +19,7 @@ class RequestLogin extends BaseRequest
 {
     private $login_url = "/accounts/login/ajax/";
 
-    protected function init($url = "")
+    protected function init($url = "", $params = null)
     {
         parent::init($this->login_url);
         $this->setPost(true);

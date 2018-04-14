@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $password = $_POST['password'];
     $instagram->setUser($username, $password);
 
-    $result = $instagram->account->loadMediasById($_POST['username_search']);
+    $result = $instagram->account->getById($_POST['username_search']);
     echo "<pre>";
     print_r($result);
     echo "</pre><br>";

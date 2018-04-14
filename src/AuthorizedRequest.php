@@ -17,14 +17,20 @@ namespace InstagramAmAPI;
  */
 class AuthorizedRequest extends Request
 {
+    /**
+     * @inheritdoc
+     */
     public function __construct(Client $client, array $data = [])
     {
         parent::__construct($client, $data);
     }
 
-    protected function init($url = "")
+    /**
+     * @inheritdoc
+     */
+    protected function init($url = "", $params = null)
     {
-        parent::init($url);
+        parent::init($url, $params);
         $headers = [
             "Cookie" => [
                 "rur" => $this->client->cookie->getCookie("rur"),
@@ -39,6 +45,7 @@ class AuthorizedRequest extends Request
             "x-instagram-ajax" => 1,
             "x-requested-with" => "XMLHttpRequest",
             "Content-Type" => "application/x-www-form-urlencoded",
+            "User-Agent" => $this->client->getUserAgent()
         ];
         $this->setHeaders($headers);
     }
