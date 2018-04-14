@@ -42,12 +42,4 @@ class RequestLogin extends BaseRequest
         $this->setHeaders($headers);
     }
 
-    public function send()
-    {
-        $emptyRequest = new BaseRequest($this->client);
-        $emptyRequest->send();
-        return parent::send();
-    }
-
-
 }

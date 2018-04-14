@@ -26,8 +26,11 @@ class RequestMediaDeleteComment extends AuthorizedRequest
             $id = explode("_", $id)[0];
         }
 
-        $url = "/web/comments/" . $id . "/delete/" . $comment_id;
+        $this->instagram_url = self::INSTAGRAM_URL;
+        $url = "web/comments/" . $id . "/delete/" . $comment_id . "/";
         parent::init($url, $params);
+        $this->setPost(true);
+        $this->setPostData([]);
     }
 
 }

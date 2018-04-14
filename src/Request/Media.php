@@ -36,7 +36,14 @@ class Media extends Request
      */
     public function unlike($mediaID)
     {
-        return true;
+        $request = new RequestUnlike($this->client, [
+            'id' => $mediaID
+        ]);
+        $res = $request->send();
+        if ($res['status'] == 'ok') {
+            return true;
+        }
+        return false;
     }
 
     /**
