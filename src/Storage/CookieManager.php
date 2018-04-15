@@ -33,7 +33,6 @@ class CookieManager
     public function setCookieFile($username)
     {
         global $_GLOBAL;
-        var_dump($_GLOBAL['ROOT_DIR'] . "/" . "sessions");
         if (!is_dir($_GLOBAL['ROOT_DIR'] . "/" . "sessions")) {
             mkdir($_GLOBAL['ROOT_DIR'] . "/" . "sessions");
         }
@@ -83,8 +82,6 @@ class CookieManager
      */
     public function saveCookie()
     {
-        var_dump("saveCookie");
-        var_dump($this->cookie_data);
         $f = fopen($this->cookie_file, "w");
         fwrite($f, json_encode($this->cookie_data));
         fclose($f);
@@ -102,8 +99,6 @@ class CookieManager
      */
     public function saveCurlCookie($cookie)
     {
-        var_dump($cookie);
-        var_dump($this->cookie_data);
         foreach ($cookie as $cookie_str) {
             $cookie_parts = explode("	", $cookie_str);
             if (!empty($cookie_parts[6])) {

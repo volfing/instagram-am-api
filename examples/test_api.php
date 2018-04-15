@@ -41,6 +41,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             case "getUserInfoByName":
                 $result = $instagram->account->getByUsername($_POST['search_id']);
                 break;
+            case "getUserFeed":
+                $result = $instagram->account->loadMediasById($_POST['search_id']);
+                break;
             case "getMediaInfoByID":
                 $result = $instagram->media->getById($_POST['search_id']);
                 break;
@@ -58,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         echo "</pre><br>";
     } catch (\InstagramAmAPI\Exception\InstagramException $e) {
         echo "<p>Поймали исключение. {$e->getMessage()}</p>";
+        echo $e->getTraceAsString();
     }
 
 }
@@ -114,6 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <input type="submit" name="submit" value="submitUnfollow">
                 <input type="submit" name="submit" value="getUserInfoByID">
                 <input type="submit" name="submit" value="getUserInfoByName">
+                <input type="submit" name="submit" value="getUserFeed">
                 <input type="submit" name="submit" value="getMediaInfoByID">
                 <input type="submit" name="submit" value="submitMediaComment">
                 <input type="submit" name="submit" value="submitMediaCommentDelete">

@@ -27,7 +27,9 @@ class RequestMediaInfo extends AuthorizedRequest
                 . "is_video, is_ad, likes {count}, owner {id, username, full_name, profile_pic_url, "
                 . "is_private, is_verified}, __typename, thumbnail_src, video_views, video_url }"
         ];
-        parent::init($url, $params);
+        parent::init($url);
+        $this->setPost(true);
+        $this->setPostData($params);
     }
 
 }

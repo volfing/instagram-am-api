@@ -64,11 +64,9 @@ class Request
             foreach ($params as $param_key => $param_value) {
                 $params[$param_key] = $param_key . "=" . $param_value;
             }
-            var_dump($params);
             $full_url .= implode("&", $params);
         }
 
-        var_dump($full_url);
         $this->curl = curl_init($full_url);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_FOLLOWLOCATION, false);
@@ -85,14 +83,11 @@ class Request
      */
     private function initRequest()
     {
-        var_dump("initRequest");
         $this->client->cookie->loadCookie();
-        var_dump($this->client->cookie);
         $this->curl = curl_init(self::INSTAGRAM_URL);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
         $result = curl_exec($this->curl);
-        var_dump($result);
         $http_code = curl_getinfo($this->curl)['http_code'];
         switch ($http_code) {
             case 200:
@@ -111,12 +106,14 @@ class Request
         }
         $rhx_gis = $this->extractRhxGis($result);
         $this->saveCookie();
-        var_dump($rhx_gis);
-        if ($rhx_gis) {
-            $this->client->cookie->setCookie("rhx_gis",$rhx_gis);
-            $this->client->cookie->saveCookie();
+        if (empty($rhx_gis)) {
+            throw new InstagramException("Unable to get rhx_gis from init request.");
         }
-        var_dump($this->client->cookie);
+        if (empty($this->client->cookie->getCookie('csrftoken'))) {
+            throw new InstagramException("Unable to get csrftoken from init request.");
+        }
+        $this->client->cookie->setCookie("rhx_gis", $rhx_gis);
+        $this->client->cookie->saveCookie();
     }
 
     /**
@@ -124,7 +121,6 @@ class Request
      */
     protected function initHeaders()
     {
-        var_dump($this->headers);
         if (empty($this->headers)) {
             return;
         }
@@ -143,7 +139,6 @@ class Request
                 $result_headers[] = $key . ": " . $value;
             }
         }
-        print_r($result_headers);
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $result_headers);
     }
 
@@ -153,7 +148,6 @@ class Request
     protected function setPost($post_flag)
     {
         if ($post_flag) {
-            var_dump("SET POST TRUE");
             curl_setopt($this->curl, CURLOPT_POST, true);
         }
     }
@@ -247,7 +241,7 @@ class Request
             $variables = $query['variables'];
         } elseif (
             !empty($this->client->cookie->getCookie("rhx_gis"))
-            && in_array("__a", $query)
+            && isset($query["__a"])
             && $endpoint
         ) {
             $variables = str_replace($this->instagram_url, "", $endpoint);
@@ -271,7 +265,10 @@ class Request
      */
     public function send()
     {
-        $this->initRequest();
+        $this->client->cookie->loadCookie();
+        if (empty($this->client->cookie->getCookie("csrftoken"))) {
+            $this->initRequest();
+        }
 
         $this->init();
         $this->preRequest();
@@ -279,20 +276,19 @@ class Request
         $result = curl_exec($this->curl);
         var_dump($result);
         $http_code = curl_getinfo($this->curl)['http_code'];
-        var_dump($http_code);
         switch ($http_code) {
             case 200:
 //                ok
                 break;
                 break;
             case 403:
-                throw new ForbiddenInstagramException();
+                throw new ForbiddenInstagramException("Http code: {$http_code}");
                 break;
             case 404:
-                throw new NotFoundInstagramException();
+                throw new NotFoundInstagramException("Http code: {$http_code}");
                 break;
             default:
-                throw new InstagramException();
+                throw new InstagramException("Http code: {$http_code}");
                 break;
 
         }
