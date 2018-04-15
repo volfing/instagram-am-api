@@ -40,7 +40,9 @@ class AuthorizedRequest extends Request
                 "ds_user_id" => $this->client->cookie->getCookie("ds_user_id"),
                 "shbid" => $this->client->cookie->getCookie("shbid")
             ],
-            "Referer" => "https://instagram.com",
+            "Referer" => "https://www.instagram.com/",
+            'Authority' => 'www.instagram.com',
+            'Origin' => 'https://www.instagram.com',
             "x-csrftoken" => $this->client->cookie->getCookie("csrftoken"),
             "x-instagram-ajax" => 1,
             "x-requested-with" => "XMLHttpRequest",

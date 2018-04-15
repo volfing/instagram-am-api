@@ -31,12 +31,15 @@ class RequestMediaComment extends AuthorizedRequest
         if (preg_match("/\d+_\d+/", $id)) {
             $id = explode("_", $id)[0];
         }
+        $this->instagram_url = self::INSTAGRAM_URL;
+        $url = "web/comments/" . $id . "/add/";
+        parent::init($url);
 
-        $url = "/web/comments/" . $id . "/add/";
         $params = [
             "comment_text" => $message
         ];
-        parent::init($url, $params);
+        $this->setPost(true);
+        $this->setPostData($params);
     }
 
 }

@@ -25,6 +25,7 @@ class Request
 {
     protected $instagram_url = "https://instagram.com";
 
+    const INSTAGRAM_URL = 'https://www.instagram.com/';
     const API_URL = 'https://www.instagram.com/query/';
     const GRAPHQL_API_URL = 'https://www.instagram.com/graphql/query/';
 
@@ -51,25 +52,68 @@ class Request
      * Создание curl подключения
      *
      * @param string $url
-     *
+     * @param null|array $params
      */
     protected function init($url = "", $params = null)
     {
         $this->client->cookie->loadCookie();
         $full_url = $this->instagram_url . $url;
+
         if (!is_null($params)) {
             $full_url .= "?";
             foreach ($params as $param_key => $param_value) {
                 $params[$param_key] = $param_key . "=" . $param_value;
             }
-            var_dump($params);
             $full_url .= implode("&", $params);
         }
-        var_dump($full_url);
+
         $this->curl = curl_init($full_url);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($this->curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
 
+    }
+
+    /**
+     * Первый запрос к сервису для получения csrftoken & rhx_gis
+     *
+     * @throws ForbiddenInstagramException
+     * @throws InstagramException
+     * @throws NotFoundInstagramException
+     */
+    private function initRequest()
+    {
+        $this->client->cookie->loadCookie();
+        $this->curl = curl_init(self::INSTAGRAM_URL);
+        curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
+        $result = curl_exec($this->curl);
+        $http_code = curl_getinfo($this->curl)['http_code'];
+        switch ($http_code) {
+            case 200:
+//                ok
+                break;
+            case 403:
+                throw new ForbiddenInstagramException();
+                break;
+            case 404:
+                throw new NotFoundInstagramException();
+                break;
+            default:
+                throw new InstagramException();
+                break;
+
+        }
+        $rhx_gis = $this->extractRhxGis($result);
+        $this->saveCookie();
+        if (empty($rhx_gis)) {
+            throw new InstagramException("Unable to get rhx_gis from init request.");
+        }
+        if (empty($this->client->cookie->getCookie('csrftoken'))) {
+            throw new InstagramException("Unable to get csrftoken from init request.");
+        }
+        $this->client->cookie->setCookie("rhx_gis", $rhx_gis);
+        $this->client->cookie->saveCookie();
     }
 
     /**
@@ -77,6 +121,9 @@ class Request
      */
     protected function initHeaders()
     {
+        if (empty($this->headers)) {
+            return;
+        }
         /** Удаляем пустые заголовки */
         $this->headers = array_filter($this->headers);
 
@@ -163,6 +210,21 @@ class Request
     }
 
     /**
+     * Ищет rhx_gis на странице
+     *
+     * @param $html_body
+     * @return bool
+     */
+    protected function extractRhxGis($html_body)
+    {
+        $success_search = preg_match_all("/\"rhx_gis\"\:\"([a-z0-9]+)\"/", $html_body, $matched);
+        if ($success_search) {
+            return $matched[1][0];
+        }
+        return false;
+    }
+
+    /**
      * Подписывает запрос
      *
      * @param array $query
@@ -179,11 +241,10 @@ class Request
             $variables = $query['variables'];
         } elseif (
             !empty($this->client->cookie->getCookie("rhx_gis"))
-            && in_array("__a", $query)
+            && isset($query["__a"])
             && $endpoint
         ) {
-//            TODO: добавить реализацию
-//            variables = compat_urllib_parse_urlparse(endpoint).path
+            $variables = str_replace($this->instagram_url, "", $endpoint);
         } else {
             return false;
         }
@@ -204,6 +265,11 @@ class Request
      */
     public function send()
     {
+        $this->client->cookie->loadCookie();
+        if (empty($this->client->cookie->getCookie("csrftoken"))) {
+            $this->initRequest();
+        }
+
         $this->init();
         $this->preRequest();
         $this->initHeaders();
@@ -214,14 +280,15 @@ class Request
             case 200:
 //                ok
                 break;
+                break;
             case 403:
-                throw new ForbiddenInstagramException();
+                throw new ForbiddenInstagramException("Http code: {$http_code}");
                 break;
             case 404:
-                throw new NotFoundInstagramException();
+                throw new NotFoundInstagramException("Http code: {$http_code}");
                 break;
             default:
-                throw new InstagramException();
+                throw new InstagramException("Http code: {$http_code}");
                 break;
 
         }

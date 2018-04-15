@@ -33,7 +33,6 @@ class CookieManager
     public function setCookieFile($username)
     {
         global $_GLOBAL;
-        var_dump($_GLOBAL['ROOT_DIR'] . "/" . "sessions");
         if (!is_dir($_GLOBAL['ROOT_DIR'] . "/" . "sessions")) {
             mkdir($_GLOBAL['ROOT_DIR'] . "/" . "sessions");
         }
@@ -102,7 +101,9 @@ class CookieManager
     {
         foreach ($cookie as $cookie_str) {
             $cookie_parts = explode("	", $cookie_str);
-            $this->setCookie($cookie_parts[5], $cookie_parts[6]);
+            if (!empty($cookie_parts[6])) {
+                $this->setCookie($cookie_parts[5], $cookie_parts[6]);
+            }
         }
         $this->saveCookie();
     }
