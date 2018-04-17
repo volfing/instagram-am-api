@@ -44,6 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             case "getUserFeed":
                 $result = $instagram->account->loadMediasById($_POST['search_id']);
                 break;
+            case "loadMediasByUsername":
+                $result = $instagram->account->loadMediasByUsername($_POST['search_id']);
+                break;
             case "getMediaInfoByID":
                 $result = $instagram->media->getById($_POST['search_id']);
                 break;
@@ -52,6 +55,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 break;
             case "submitMediaCommentDelete":
                 $result = $instagram->media->removeComment($_POST['search_id'], $_POST['comment']);
+                break;
+            case "findByTag":
+                $result = $instagram->explore->searchByTag($_POST['search_id']);
+                break;
+            case "findByLocation":
+                $result = $instagram->explore->searchByLocationId($_POST['search_id']);
+                break;
+            case "RequestMediaInfoByShortcode":
+                $result = $instagram->media->getByShortCode($_POST['search_id']);
                 break;
             default:
                 break;
@@ -95,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         </div>
         <div class="form-item">
             <label>
-                Search id
+                Search id/name
                 <input type="text" name="search_id" placeholder="Enter search id"
                        value="<?= !empty($_POST['search_id']) ? $_POST['search_id'] : '' ?>">
             </label>
@@ -119,9 +131,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <input type="submit" name="submit" value="getUserInfoByID">
                 <input type="submit" name="submit" value="getUserInfoByName">
                 <input type="submit" name="submit" value="getUserFeed">
+                <input type="submit" name="submit" value="loadMediasByUsername">
                 <input type="submit" name="submit" value="getMediaInfoByID">
                 <input type="submit" name="submit" value="submitMediaComment">
                 <input type="submit" name="submit" value="submitMediaCommentDelete">
+            </div>
+            <div>
+                <input type="submit" name="submit" value="findByTag">
+                <input type="submit" name="submit" value="findByLocation">
+                <input type="submit" name="submit" value="RequestMediaInfoByShortcode">
             </div>
         </div>
     </form>
