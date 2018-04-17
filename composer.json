@@ -1,8 +1,14 @@
 {
   "name": "volfing/instagram-am-api",
   "description": "Instagram web API library",
+  "keywords": [
+    "Instagram",
+    "API",
+    "PHP"
+  ],
   "minimum-stability": "stable",
   "license": "proprietary",
+  "type": "library",
   "authors": [
     {
       "name": "shmax",
@@ -13,6 +19,11 @@
       "email": "bysslaev@gmail.com"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "Fbns\\Client\\": "src/"
+    }
+  },
   "require": {
     "lazyjsonmapper/lazyjsonmapper": "^1.6.1"
   }
