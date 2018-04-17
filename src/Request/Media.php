@@ -11,6 +11,7 @@ namespace InstagramAmAPI\Request;
 
 use InstagramAmAPI\Model\Comment;
 use InstagramAmAPI\Model\Like;
+use InstagramAmAPI\Model\Photo;
 
 class Media extends Request
 {
@@ -88,10 +89,49 @@ class Media extends Request
      */
     public function getById($mediaID)
     {
+//        TODO: Не работает
         $request = new RequestMediaInfo($this->client, [
             'id' => $mediaID
         ]);
-        return $request->send();
+        $response = $request->send();
+        return $response;
+    }
+
+    public function getByShortCode($mediaShortcode)
+    {
+        $request = new RequestMediaInfoByShortcode($this->client, [
+            'shortcode' => $mediaShortcode
+        ]);
+        $response = $request->send();
+        if (is_array($response)) {
+            $response = $response['graphql']['shortcode_media'];
+            $photos = [];
+            foreach ($response['display_resources'] as $display_resource) {
+                $photos[] = new Photo([
+                    'src' => $display_resource['src'],
+                    'width' => $display_resource['config_width'],
+                    'height' => $display_resource['config_height'],
+                ]);
+            }
+            $message = "";
+            if (isset($response['edge_media_to_caption']['edges'][0])) {
+                $message = $response['edge_media_to_caption']['edges'][0]['node']['text'];
+            }
+
+            $media = new \InstagramAmAPI\Model\Media([
+                'id' => $response['id'],
+                "owner" => $response['owner']['id'],
+                "dateOfPublish" => $response['taken_at_timestamp'],
+                "numOfComments" => $response['edge_media_to_comment']['count'],
+                "numOfLikes" => $response['edge_media_preview_like']['count'],
+                "type" => $response['__typename'],
+                "message" => $message,
+//        "comments" => $comments,
+                "photos" => $photos,
+            ]);
+            return $media;
+        }
+        return $response;
     }
 
     /**
