@@ -31,13 +31,11 @@ class RequestUserInfo extends AuthorizedRequest
         $variables = [
             "__a" => 1
         ];
-        $url = "/" . $this->data['username'] . "/?__a=1";
-        parent::init($url);
+        $url = "/" . $this->data['username'] . "/";
+        parent::init($url, $variables);
 
         $this->addHeader("Referer", "https://www.instagram.com/" . $this->data['username'] . "/");
-        $this->addQuerySignature([
-            "__a" => 1,
-        ], $this->instagram_url . $url);
+        $this->addQuerySignature($variables, $this->instagram_url . $url);
     }
 
 

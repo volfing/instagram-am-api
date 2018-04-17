@@ -114,6 +114,7 @@ class Request
         }
         $this->client->cookie->setCookie("rhx_gis", $rhx_gis);
         $this->client->cookie->saveCookie();
+        curl_close($this->curl);
     }
 
     /**
@@ -132,11 +133,15 @@ class Request
             if (is_array($value)) {
                 $full_value = "";
                 foreach ($value as $key_inner => $value_inner) {
-                    $full_value .= $key_inner . "=" . $value_inner . "; ";
+                    if (!empty($value_inner)) {
+                        $full_value .= $key_inner . "=" . $value_inner . "; ";
+                    }
                 }
                 $result_headers[] = $key . ": " . $full_value;
             } else {
-                $result_headers[] = $key . ": " . $value;
+                if (!empty($value)) {
+                    $result_headers[] = $key . ": " . $value;
+                }
             }
         }
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $result_headers);
@@ -245,10 +250,12 @@ class Request
             && $endpoint
         ) {
             $variables = str_replace($this->instagram_url, "", $endpoint);
+            $variables = str_replace("?__a=1", "", $variables);
         } else {
             return false;
         }
-        $signature = md5($this->client->cookie->getCookie('rhx_gis') . ":" . $this->client->cookie->getCookie('csfrtoken') . ":" . $variables);
+        $str_for_hash = $this->client->cookie->getCookie('rhx_gis') . ":" . $variables;
+        $signature = md5($str_for_hash);
         if (!empty($signature)) {
             $this->addHeader("X-Instagram-GIS", $signature);
             return true;

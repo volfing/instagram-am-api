@@ -20,7 +20,7 @@ class RequestUserInfoById extends AuthorizedRequest
             "q" => "ig_user(" . $this->data['id'] . ") {id, username, full_name, profile_pic_url, biography, external_url, is_private, is_verified, media {count}, followed_by {count}, follows {count} }"
         ];
         parent::init($url);
-        $this->setPost(true);
+        $this->setPost(false);
         $this->setPostData($params);
     }
 
