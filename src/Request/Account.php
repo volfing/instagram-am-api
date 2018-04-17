@@ -9,6 +9,7 @@
 namespace InstagramAmAPI\Request;
 
 use InstagramAmAPI\Model\Media;
+use InstagramAmAPI\Model\ModelHelper;
 use InstagramAmAPI\Model\Photo;
 
 /**
@@ -45,29 +46,7 @@ class Account extends Request
             $media = [];
             foreach ($response["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"] as $media_node) {
 //                TODO: Комментарии надо дополнительным запросов доставать.
-                $photos = [];
-                foreach ($media_node["node"]["thumbnail_resources"] as $image) {
-                    $photos[] = new Photo([
-                        "src" => $image["src"],
-                        "width" => $image["config_width"],
-                        "height" => $image["config_height"],
-                    ]);
-                }
-                $message = $media_node["node"]["edge_media_to_caption"]["edges"];
-                if (is_array($message) && !empty($message)) {
-                    $message = $message[0]["node"]["text"];
-                }
-                $data = [
-                    "id" => $media_node["node"]["id"],
-                    "owner" => $media_node["node"]["owner"]["id"],
-                    "dateOfPublish" => $media_node["node"]["taken_at_timestamp"],
-                    "numOfComments" => $media_node["node"]["edge_media_to_comment"]["count"],
-                    "numOfLikes" => $media_node["node"]["edge_liked_by"]["count"],
-                    "type" => $media_node["node"]["__typename"],
-                    "message" => $message,
-                    "photos" => $photos,
-                ];
-                $model = new Media($data);
+                $model = ModelHelper::loadMediaFromNode($media_node);
                 $media[] = $model;
             }
             return [
@@ -174,33 +153,7 @@ class Account extends Request
             $media = [];
             foreach ($response["data"]["user"]["edge_owner_to_timeline_media"]["edges"] as $media_node) {
                 $media_node = $media_node["node"];
-                $photos = [];
-                foreach ($media_node["thumbnail_resources"] as $image) {
-                    $photos[] = new Photo([
-                        "src" => $image["src"],
-                        "width" => $image["config_width"],
-                        "height" => $image["config_height"],
-                    ]);
-                }
-                $message = $media_node["edge_media_to_caption"]["edges"];
-                if (is_array($message) && !empty($message)) {
-                    if (isset($message[0]["text"])) {
-                        $message = $message[0]["text"];
-                    } elseif (isset($message[0]["node"])) {
-                        $message = $message[0]["node"]["text"];
-                    }
-                }
-                $data = [
-                    "id" => $media_node["id"],
-                    "owner" => $media_node["owner"]["id"],
-                    "dateOfPublish" => $media_node["taken_at_timestamp"],
-                    "numOfComments" => $media_node["edge_media_to_comment"]["count"],
-                    "numOfLikes" => $media_node["edge_media_preview_like"]["count"],
-                    "type" => $media_node["__typename"],
-                    "message" => $message,
-                    "photos" => $photos,
-                ];
-                $model = new Media($data);
+                $model = ModelHelper::loadMediaFromNode($media_node);
                 $media[] = $model;
             }
             return $media;
