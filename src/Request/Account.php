@@ -8,6 +8,13 @@
 
 namespace InstagramAmAPI\Request;
 
+use InstagramAmAPI\Model\Media;
+use InstagramAmAPI\Model\Photo;
+
+/**
+ * Class Account
+ * @package InstagramAmAPI\Request
+ */
 class Account extends Request
 {
     /**
@@ -16,9 +23,10 @@ class Account extends Request
      */
     public function getById($userID)
     {
+//        TODO: не работает...
         $request = new RequestUserInfoById($this->client, ['id' => $userID]);
         $response = $request->send();
-        var_dump($response);
+
         return $response;
     }
 
@@ -37,14 +45,17 @@ class Account extends Request
             $media = [];
             foreach ($response["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"] as $media_node) {
 //                TODO: Комментарии надо дополнительным запросов доставать.
-                $comments = [];
                 $photos = [];
                 foreach ($media_node["node"]["thumbnail_resources"] as $image) {
-                    $photos[] = [
+                    $photos[] = new Photo([
                         "src" => $image["src"],
                         "width" => $image["config_width"],
                         "height" => $image["config_height"],
-                    ];
+                    ]);
+                }
+                $message = $media_node["node"]["edge_media_to_caption"]["edges"];
+                if (is_array($message) && !empty($message)) {
+                    $message = $message[0]["node"]["text"];
                 }
                 $data = [
                     "id" => $media_node["node"]["id"],
@@ -53,13 +64,11 @@ class Account extends Request
                     "numOfComments" => $media_node["node"]["edge_media_to_comment"]["count"],
                     "numOfLikes" => $media_node["node"]["edge_liked_by"]["count"],
                     "type" => $media_node["node"]["__typename"],
-                    "message" => $media_node["node"]["edge_media_to_caption"]["edges"][0]["node"]["text"],
-                    "comments" => $comments,
+                    "message" => $message,
                     "photos" => $photos,
                 ];
-//                TODO: Не работает пока...Надо кое-где поменять типы в json map + не инициализируются пустые массивы с объектами Photo, Comment...
-//                $model = new \InstagramAmAPI\Model\Media($data);
-                $media[] = $data;
+                $model = new Media($data);
+                $media[] = $model;
             }
             return [
                 "id" => $response["graphql"]["user"]["id"],
@@ -72,14 +81,24 @@ class Account extends Request
         return null;
     }
 
-    /*
+    /**
      * Подписка на пользователя по его ID
-     * return boolean
+     *
+     * {
+     *      "result": "following",
+     *      "status": "ok"
+     * }
+     *
+     * @param $userID
+     * @return bool
      */
     public function followById($userID)
     {
-        $reques = new RequestFollow($this->client, ['id' => $userID]);
-        return $reques->send();
+        $response = new RequestFollow($this->client, ['id' => $userID]);
+        if ($response['result'] == 'following') {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -91,8 +110,7 @@ class Account extends Request
     {
         $user = $this->getByUsername($username);
         $user_id = $user['id'];
-        $this->followById($user_id);
-        return true;
+        return $this->followById($user_id);
     }
 
     /**
@@ -103,7 +121,11 @@ class Account extends Request
     public function unFollowById($userID)
     {
         $request = new RequestUnfollow($this->client, ['id' => $userID]);
-        return $request->send();
+        $response = $request->send();
+        if ($response['status'] == 'ok') {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -115,8 +137,7 @@ class Account extends Request
     {
         $user = $this->getByUsername($username);
         $user_id = $user['id'];
-        $this->unFollowById($user_id);
-        return true;
+        return $this->unFollowById($user_id);
     }
 
     /*
@@ -148,8 +169,43 @@ class Account extends Request
             'count' => $count,
             'after' => $maxID,
         ]);
-//        TODO: обработать данные на выходе в аккуратный массив объектов Media
-        return $request->send();
+        $response = $request->send();
+        if (is_array($response)) {
+            $media = [];
+            foreach ($response["data"]["user"]["edge_owner_to_timeline_media"]["edges"] as $media_node) {
+                $media_node = $media_node["node"];
+                $photos = [];
+                foreach ($media_node["thumbnail_resources"] as $image) {
+                    $photos[] = new Photo([
+                        "src" => $image["src"],
+                        "width" => $image["config_width"],
+                        "height" => $image["config_height"],
+                    ]);
+                }
+                $message = $media_node["edge_media_to_caption"]["edges"];
+                if (is_array($message) && !empty($message)) {
+                    if (isset($message[0]["text"])) {
+                        $message = $message[0]["text"];
+                    } elseif (isset($message[0]["node"])) {
+                        $message = $message[0]["node"]["text"];
+                    }
+                }
+                $data = [
+                    "id" => $media_node["id"],
+                    "owner" => $media_node["owner"]["id"],
+                    "dateOfPublish" => $media_node["taken_at_timestamp"],
+                    "numOfComments" => $media_node["edge_media_to_comment"]["count"],
+                    "numOfLikes" => $media_node["edge_media_preview_like"]["count"],
+                    "type" => $media_node["__typename"],
+                    "message" => $message,
+                    "photos" => $photos,
+                ];
+                $model = new Media($data);
+                $media[] = $model;
+            }
+            return $media;
+        }
+        return null;
     }
 
     /**

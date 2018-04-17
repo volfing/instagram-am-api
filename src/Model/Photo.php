@@ -14,9 +14,8 @@ use LazyJsonMapper\LazyJsonMapper;
 class Photo extends LazyJsonMapper
 {
     const JSON_PROPERTY_MAP = [
-        "id" => "string",
-        "owner" => "Account",
-        "date" => "id",
-        "media" => "Media",
+        "src" => "string",
+        "width" => "int",
+        "height" => "int",
     ];
 }
