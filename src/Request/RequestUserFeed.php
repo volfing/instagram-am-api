@@ -29,9 +29,16 @@ class RequestUserFeed extends AuthorizedRequest
         }
         $params = [
             "query_hash" => QueryProperty::QUERY_HASH_USER,
-            "variables" => "%7B\"id\":\"" . $this->data['id'] . "\",\"first\":" . $count_items . "%7D"
+            "variables" => "{\"id\":\"" . $this->data['id'] . "\",\"first\":" . $count_items . "}"
         ];
+//        set max_id
+        if (isset($this->data['after']) && !empty($this->data['after'])) {
+            $params['after'] = $this->data['after'];
+        }
+
         parent::init("", $params);
+        $this->addHeader("User-Agent", "");
+        $this->addQuerySignature($params);
     }
 
 

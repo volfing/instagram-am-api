@@ -82,12 +82,16 @@ class Account extends Request
         return $reques->send();
     }
 
-    /*
+    /**
      * Подписка на пользователя по его логину
-     * return boolean
+     * @param $username
+     * @return bool
      */
     public function followByUsername($username)
     {
+        $user = $this->getByUsername($username);
+        $user_id = $user['id'];
+        $this->followById($user_id);
         return true;
     }
 
@@ -102,12 +106,16 @@ class Account extends Request
         return $request->send();
     }
 
-    /*
+    /**
      * Отписка от пользователя по его логину
-     * return boolean
+     * @param $username
+     * @return bool
      */
     public function unFollowByUsername($username)
     {
+        $user = $this->getByUsername($username);
+        $user_id = $user['id'];
+        $this->unFollowById($user_id);
         return true;
     }
 
@@ -133,20 +141,28 @@ class Account extends Request
      * Получение списка публикаций пользователя по его ID
      * @return Media[]
      */
-    public function loadMediasById($userID, $maxID = null)
+    public function loadMediasById($userID, $count = 10, $maxID = null)
     {
-        $request = new RequestUserFeed($this->client, ['id' => $userID]);
+        $request = new RequestUserFeed($this->client, [
+            'id' => $userID,
+            'count' => $count,
+            'after' => $maxID,
+        ]);
 //        TODO: обработать данные на выходе в аккуратный массив объектов Media
         return $request->send();
     }
 
-    /*
+    /**
      * Получение списка публикаций пользователя по его логину
-     * return Media[]
+     * @param $username
+     * @param null $maxID
+     * @return array|Media[]
      */
     public function loadMediasByUsername($username, $maxID = null)
     {
-        return;
+        $user = $this->getByUsername($username);
+        $user_id = $user['id'];
+        return $this->loadMediasById($user_id);
     }
 
 }

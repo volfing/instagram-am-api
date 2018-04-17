@@ -15,6 +15,8 @@ class NonAuthorizedRequest extends Request
     {
         parent::__construct($client, $data);
 
+        $this->instagram_url = self::INSTAGRAM_URL;
+
         $headers = [
             "Cookie" => [
                 "rur" => $this->client->cookie->getCookie("rur"),
