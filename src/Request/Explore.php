@@ -8,23 +8,34 @@
 
 namespace InstagramAmAPI\Request;
 
-
+/**
+ * Class Explore
+ * @package InstagramAmAPI\Request
+ */
 class Explore extends Request
 {
-    /*
+    /**
      * Поиск публикакций по хештегу
-     * return Explore
+     * @param $tag
+     * @return Explore|array
      */
     public function searchByTag($tag){
-        return;
+        $request = new RequestTagFeed($this->client, [
+            "tag" => $tag
+        ]);
+        return $request->send();
     }
 
-    /*
+    /**
      * Поиск публикакций по ID локации
-     * return Explore
+     * @param $locationID
+     * @return Explore|array
      */
     public function searchByLocationId($locationID){
-        return;
+        $request = new RequestLocationFeed($this->client, [
+            "location_id" => $locationID
+        ]);
+        return $request->send();
     }
 
 }
