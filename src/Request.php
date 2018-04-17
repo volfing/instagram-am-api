@@ -144,6 +144,7 @@ class Request
                 }
             }
         }
+
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $result_headers);
     }
 
@@ -164,6 +165,7 @@ class Request
     protected function setPostData($data)
     {
         if (!empty($data)) {
+            $this->setPost(true);
             curl_setopt($this->curl, CURLOPT_POSTFIELDS, http_build_query($data));
         }
     }
@@ -251,6 +253,12 @@ class Request
         ) {
             $variables = str_replace($this->instagram_url, "", $endpoint);
             $variables = str_replace("?__a=1", "", $variables);
+        } elseif (
+            !empty($this->client->cookie->getCookie("rhx_gis"))
+            && isset($query["q"])
+            && $endpoint
+        ) {
+            $variables = $query["q"];
         } else {
             return false;
         }

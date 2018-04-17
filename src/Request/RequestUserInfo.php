@@ -33,7 +33,7 @@ class RequestUserInfo extends AuthorizedRequest
         ];
         $url = "/" . $this->data['username'] . "/";
         parent::init($url, $variables);
-
+        $this->addHeader("User-Agent", "");
         $this->addHeader("Referer", "https://www.instagram.com/" . $this->data['username'] . "/");
         $this->addQuerySignature($variables, $this->instagram_url . $url);
     }
