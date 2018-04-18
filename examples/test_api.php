@@ -68,6 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             case "getMediaComments":
                 $result = $instagram->media->getComments($_POST['search_id']);
                 break;
+            case "getMediaLikes":
+                $result = $instagram->media->getLikes($_POST['search_id']);
+                break;
             default:
                 break;
         }
@@ -144,6 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <input type="submit" name="submit" value="findByLocation">
                 <input type="submit" name="submit" value="RequestMediaInfoByShortcode">
                 <input type="submit" name="submit" value="getMediaComments">
+                <input type="submit" name="submit" value="getMediaLikes">
             </div>
         </div>
     </form>
