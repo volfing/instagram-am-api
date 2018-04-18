@@ -119,22 +119,39 @@ class Account extends Request
         return $this->unFollowById($user_id);
     }
 
-    /*
+    /**
      * Публикация фотографии в instagram
-     * return int $mediaID
+     * @param string $photo_data
+     * @param string $message
+     * @return int $mediaID
      */
-    public function postMedia($message, $photo)
+    public function postMedia($photo_data, $message = "")
     {
-        return;
+        $request = new RequestPostPhoto($this->client,
+            [
+                'photo_data' => $photo_data,
+                'message' => $message,
+            ]);
+        $response = $request->send();
+        return $response;
     }
 
-    /*
+    /**
      * Удаление публикации по ее id
-     * return boolean
+     * @param $mediaID
+     * @return bool
      */
     public function deleteMediaById($mediaID)
     {
-        return true;
+        $request = new RequestDeletePhoto($this->client,
+            [
+                'media_id' => $mediaID
+            ]);
+        $response = $request->send();
+        if ($response['did_delete'] == 1) {
+            return true;
+        }
+        return null;
     }
 
     /**
