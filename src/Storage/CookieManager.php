@@ -32,14 +32,15 @@ class CookieManager
      */
     public function setCookieFile($username)
     {
-        global $_GLOBAL;
-        if (!is_dir($_GLOBAL['ROOT_DIR'] . "/" . "sessions")) {
-            mkdir($_GLOBAL['ROOT_DIR'] . "/" . "sessions");
+        $dir = __DIR__ . "/../sessions";
+        if (!is_dir($dir)) {
+            mkdir($dir);
         }
-        if (!is_dir($_GLOBAL['ROOT_DIR'] . "/" . "sessions/" . $username)) {
-            mkdir($_GLOBAL['ROOT_DIR'] . "/" . "sessions/" . $username);
+        $userdir = $dir . "/" . $username;
+        if (!is_dir($userdir)) {
+            mkdir($userdir);
         }
-        $this->cookie_file = $_GLOBAL['ROOT_DIR'] . "/" . "sessions/" . $username . "/cookie.txt";
+        $this->cookie_file = $userdir . "/cookie.txt";
     }
 
     /**
