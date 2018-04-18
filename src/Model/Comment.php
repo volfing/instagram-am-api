@@ -15,12 +15,12 @@ class Comment extends LazyJsonMapper
 {
     const JSON_PROPERTY_MAP = [
         "id" => "string",
-        "owner" => "Account",
-        "media" => "Media",
+        "owner" => "int",
+//        "media" => "Media",
         "date" => "int",
         "message" => "string",
         "numOfLikes" => "int",
         "numOfSubComments" => "int",
-        "subComments" => "Comment[]",
+//        "subComments" => "Comment[]",
     ];
 }

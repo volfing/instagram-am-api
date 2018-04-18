@@ -2,20 +2,20 @@
 /**
  * Created by PhpStorm.
  * User: Anton Vasiliev <bysslaev@gmail.com>
- * Date: 14/04/2018
- * Time: 01:03
+ * Date: 18/04/2018
+ * Time: 03:23
  */
 
 namespace InstagramAmAPI\Request;
 
 
-use InstagramAmAPI\AuthorizedRequest;
+use InstagramAmAPI\NonAuthorizedRequest;
 
 /**
- * Class RequestUserFeed
+ * Class RequestMediaLikes
  * @package InstagramAmAPI\Request
  */
-class RequestUserFeed extends AuthorizedRequest
+class RequestMediaLikes extends NonAuthorizedRequest
 {
     /**
      * @inheritdoc
@@ -23,7 +23,7 @@ class RequestUserFeed extends AuthorizedRequest
     protected function init($url = "", $params = null)
     {
         $this->instagram_url = self::GRAPHQL_API_URL;
-        $count_items = 10;
+        $count_items = 24;
         if (!empty($this->data['count'])) {
             $count_items = (int)$this->data['count'];
         }
@@ -32,16 +32,14 @@ class RequestUserFeed extends AuthorizedRequest
         if (isset($this->data['after']) && !empty($this->data['after'])) {
             $params_after = ",\"after\":\"{$this->data['after']}\"";
         }
+
         $params = [
-            "query_hash" => QueryProperty::QUERY_HASH_USER,
-            "variables" => "{\"id\":\"" . $this->data['id'] . "\",\"first\":" . $count_items . $params_after . "}"
+            "query_hash" => QueryProperty::QUERY_HASH_MEDIA_LIKES,
+            "variables" => "{\"shortcode\":\"" . $this->data['shortcode'] . "\",\"first\":" . $count_items . $params_after . "}"
         ];
-
-
-        parent::init("", $params);
+        parent::init($url, $params);
         $this->addHeader("User-Agent", "");
         $this->addQuerySignature($params);
     }
-
 
 }

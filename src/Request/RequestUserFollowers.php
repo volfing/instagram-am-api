@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: Anton Vasiliev <bysslaev@gmail.com>
- * Date: 14/04/2018
- * Time: 01:03
+ * Date: 18/04/2018
+ * Time: 14:14
  */
 
 namespace InstagramAmAPI\Request;
@@ -12,10 +12,10 @@ namespace InstagramAmAPI\Request;
 use InstagramAmAPI\AuthorizedRequest;
 
 /**
- * Class RequestUserFeed
+ * Class RequestUserFollowers
  * @package InstagramAmAPI\Request
  */
-class RequestUserFeed extends AuthorizedRequest
+class RequestUserFollowers extends AuthorizedRequest
 {
     /**
      * @inheritdoc
@@ -33,7 +33,7 @@ class RequestUserFeed extends AuthorizedRequest
             $params_after = ",\"after\":\"{$this->data['after']}\"";
         }
         $params = [
-            "query_hash" => QueryProperty::QUERY_HASH_USER,
+            "query_hash" => QueryProperty::QUERY_HASH_USER_FOLLOWERS,
             "variables" => "{\"id\":\"" . $this->data['id'] . "\",\"first\":" . $count_items . $params_after . "}"
         ];
 
@@ -42,6 +42,5 @@ class RequestUserFeed extends AuthorizedRequest
         $this->addHeader("User-Agent", "");
         $this->addQuerySignature($params);
     }
-
 
 }
