@@ -2,20 +2,21 @@
 /**
  * Created by PhpStorm.
  * User: Anton Vasiliev <bysslaev@gmail.com>
- * Date: 14/04/2018
- * Time: 01:03
+ * Date: 18/04/2018
+ * Time: 02:24
  */
 
 namespace InstagramAmAPI\Request;
 
 
-use InstagramAmAPI\AuthorizedRequest;
+use InstagramAmAPI\Client;
+use InstagramAmAPI\NonAuthorizedRequest;
 
 /**
- * Class RequestUserFeed
+ * Class RequestMediaComments
  * @package InstagramAmAPI\Request
  */
-class RequestUserFeed extends AuthorizedRequest
+class RequestMediaComments extends NonAuthorizedRequest
 {
     /**
      * @inheritdoc
@@ -32,16 +33,14 @@ class RequestUserFeed extends AuthorizedRequest
         if (isset($this->data['after']) && !empty($this->data['after'])) {
             $params_after = ",\"after\":\"{$this->data['after']}\"";
         }
+
         $params = [
-            "query_hash" => QueryProperty::QUERY_HASH_USER,
-            "variables" => "{\"id\":\"" . $this->data['id'] . "\",\"first\":" . $count_items . $params_after . "}"
+            "query_hash" => QueryProperty::QUERY_HASH_MEDIA_COMMENTS,
+            "variables" => "{\"shortcode\":\"" . $this->data['shortcode'] . "\",\"first\":" . $count_items . $params_after . "}"
         ];
-
-
-        parent::init("", $params);
+        parent::init($url, $params);
         $this->addHeader("User-Agent", "");
         $this->addQuerySignature($params);
     }
-
 
 }

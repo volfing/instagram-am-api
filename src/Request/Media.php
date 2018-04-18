@@ -137,12 +137,38 @@ class Media extends Request
     /**
      * Получение списка комментариев к $mediaID
      * @param string $mediaID
+     * @param int $count
      * @param null|string $maxID
      * @return Comment[]
      */
-    public function getComments($mediaID, $maxID = null)
+    public function getComments($mediaID, $count = 15, $maxID = null)
     {
-        return;
+        $request = new RequestMediaComments(
+            $this->client,
+            [
+                'shortcode' => $mediaID,
+                'count' => $count,
+                'after' => $maxID,
+            ]);
+        $response = $request->send();
+        if (is_array($response)) {
+            $comments = [];
+            $response = $response['data']['shortcode_media']['edge_media_to_comment'];
+            $comments_count = $response['count'];
+            $max_id = $response['page_info']['end_cursor'];
+            $response = $response['edges'];
+            foreach ($response as $item) {
+                $item = $item['node'];
+                $comments[] = new Comment([
+                    'id' => $item['id'],
+                    'owner' => $item['owner']['id'],
+                    'date' => $item['created_at'],
+                    'message' => $item['text'],
+                ]);
+            }
+            return $comments;
+        }
+        return null;
     }
 
     /**
