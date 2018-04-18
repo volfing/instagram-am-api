@@ -67,6 +67,7 @@ class Request
             $full_url .= implode("&", $params);
         }
 
+        var_dump($full_url);
         $this->curl = curl_init($full_url);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_FOLLOWLOCATION, false);
@@ -145,6 +146,7 @@ class Request
             }
         }
 
+        var_dump($result_headers);
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $result_headers);
     }
 

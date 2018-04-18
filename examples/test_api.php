@@ -71,6 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             case "getMediaLikes":
                 $result = $instagram->media->getLikes($_POST['search_id']);
                 break;
+            case "deleteMedia":
+                $result = $instagram->account->deleteMediaById($_POST['search_id']);
+                break;
             default:
                 break;
         }
@@ -148,6 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <input type="submit" name="submit" value="RequestMediaInfoByShortcode">
                 <input type="submit" name="submit" value="getMediaComments">
                 <input type="submit" name="submit" value="getMediaLikes">
+                <input type="submit" name="submit" value="deleteMedia">
             </div>
         </div>
     </form>
