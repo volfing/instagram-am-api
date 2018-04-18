@@ -8,6 +8,7 @@
 
 namespace InstagramAmAPI\Request;
 
+use InstagramAmAPI\Exception\InstagramException;
 use InstagramAmAPI\Model\Media;
 use InstagramAmAPI\Model\ModelHelper;
 use InstagramAmAPI\Model\Photo;
@@ -191,6 +192,87 @@ class Account extends Request
         $user = $this->getByUsername($username);
         $user_id = $user['id'];
         return $this->loadMediasById($user_id, $count, $maxID);
+    }
+
+    /**
+     * Получение списка подписчиков пользователя
+     *
+     * @param $user_id
+     * @param null $max_id
+     * @param int $count
+     * @return array
+     * @throws InstagramException
+     */
+    public function followers($user_id, $max_id = null, $count = 50)
+    {
+        $request = new RequestUserFollowers($this->client, [
+            'id' => $user_id,
+            'after' => $max_id,
+            'count' => $count,
+        ]);
+        $response = $request->send();
+        if (is_array($response)) {
+            $followers = [];
+            $response = $response['data']['user']['edge_followed_by'];
+            $next_max_id = null;
+            if ($response['page_info']['has_next_page']) {
+                $next_max_id = $response['page_info']['end_cursor'];
+            }
+            $count = $response['count'];
+            $response = $response['edges'];
+            foreach ($response as $item) {
+                $item = $item["node"];
+                $followers[] = new \InstagramAmAPI\Model\Account([
+                    'id' => $item['id'],
+                    'username' => $item['username'],
+                    'full_name' => $item['full_name'],
+                    'profile_pic_url' => $item['profile_pic_url'],
+                ]);
+            }
+            return $followers;
+        }
+        throw new InstagramException("Bad response");
+    }
+
+    /**
+     * Получение списка подписок пользователя
+     *
+     * @param $user_id
+     * @param null $max_id
+     * @param int $count
+     * @return array
+     * @throws InstagramException
+     */
+    public function followings($user_id, $max_id = null, $count = 50)
+    {
+        $request = new RequestUserFollowings($this->client, [
+            'id' => $user_id,
+            'after' => $max_id,
+            'count' => $count,
+        ]);
+        $response = $request->send();
+
+        if (is_array($response)) {
+            $followings = [];
+            $response = $response['data']['user']['edge_follow'];
+            $next_max_id = null;
+            if ($response['page_info']['has_next_page']) {
+                $next_max_id = $response['page_info']['end_cursor'];
+            }
+            $count = $response['count'];
+            $response = $response['edges'];
+            foreach ($response as $item) {
+                $item = $item["node"];
+                $followings[] = new \InstagramAmAPI\Model\Account([
+                    'id' => $item['id'],
+                    'username' => $item['username'],
+                    'full_name' => $item['full_name'],
+                    'profile_pic_url' => $item['profile_pic_url'],
+                ]);
+            }
+            return $followings;
+        }
+        throw new InstagramException("Bad response");
     }
 
 }
