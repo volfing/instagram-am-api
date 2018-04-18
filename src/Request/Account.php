@@ -46,6 +46,7 @@ class Account extends Request
             $media = [];
             foreach ($response["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"] as $media_node) {
 //                TODO: Комментарии надо дополнительным запросов доставать.
+                $media_node = $media_node["node"];
                 $model = ModelHelper::loadMediaFromNode($media_node);
                 $media[] = $model;
             }
@@ -181,14 +182,15 @@ class Account extends Request
     /**
      * Получение списка публикаций пользователя по его логину
      * @param $username
+     * @param int $count
      * @param null $maxID
      * @return array|Media[]
      */
-    public function loadMediasByUsername($username, $maxID = null)
+    public function loadMediasByUsername($username, $count = 10, $maxID = null)
     {
         $user = $this->getByUsername($username);
         $user_id = $user['id'];
-        return $this->loadMediasById($user_id);
+        return $this->loadMediasById($user_id, $count, $maxID);
     }
 
 }

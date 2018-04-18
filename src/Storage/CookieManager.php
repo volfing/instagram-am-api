@@ -32,7 +32,7 @@ class CookieManager
      */
     public function setCookieFile($username)
     {
-        $dir = __DIR__ . "/../sessions";
+        $dir = __DIR__ . "/../../sessions";
         if (!is_dir($dir)) {
             mkdir($dir);
         }

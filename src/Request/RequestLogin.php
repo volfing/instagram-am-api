@@ -42,4 +42,16 @@ class RequestLogin extends BaseRequest
         $this->setHeaders($headers);
     }
 
+    /**
+     * {
+     *      "authenticated": false,
+     *      "user": true,
+     *      "status": "ok"
+     * }
+     */
+    public function send()
+    {
+        return parent::send();
+    }
+
 }
