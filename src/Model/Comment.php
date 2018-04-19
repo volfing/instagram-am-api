@@ -11,6 +11,16 @@ namespace InstagramAmAPI\Model;
 
 use LazyJsonMapper\LazyJsonMapper;
 
+/**
+ * Class Comment
+ * @property string $id
+ * @property int $owner
+ * @property int $date
+ * @property string $message
+ * @property int $numOfLikes
+ * @property int $numOfSubComments
+ * @package InstagramAmAPI\Model
+ */
 class Comment extends LazyJsonMapper
 {
     const JSON_PROPERTY_MAP = [

@@ -299,4 +299,37 @@ class Account extends Request
         throw new InstagramException("Bad response");
     }
 
+    /**
+     * @param int $count
+     * @param null|string $max_id
+     * @return ResponseMediaFeed
+     */
+    public function timelineFeed($count = 12, $max_id = null)
+    {
+        $request = new RequestTimelineFeed($this->client, [
+            'count' => $count,
+            'max_id' => $max_id,
+        ]);
+        $response = $request->send();
+        if (is_array($response)) {
+            $response = $response['data']['user']['edge_web_feed_timeline'];
+            $next_max_id = null;
+            if ($response['page_info']['has_next_page']) {
+                $next_max_id = $response['page_info']['end_cursor'];
+            }
+            $response = $response['edges'];
+            $medias = [];
+            foreach ($response as $node) {
+                $node = $node['node'];
+                $medias[] = ModelHelper::loadMediaFromNode($node);
+            }
+            return new ResponseMediaFeed([
+                'next_max_id' => $next_max_id,
+                'count' => $count,
+                'items' => $medias,
+            ]);
+        }
+
+    }
+
 }

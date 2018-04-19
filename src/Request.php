@@ -68,11 +68,14 @@ class Request
         }
 
         $this->curl = curl_init($full_url);
+        curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, 0);
+        curl_setopt($this->curl, CURLOPT_TIMEOUT, 15);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
+
         if (!empty($this->client->getProxy())) {
-            curl_setopt($this->curl, CURLOPT_PROXYTYPE, $this->client->getProxy());
+            curl_setopt($this->curl, CURLOPT_PROXY, $this->client->getProxy());
             curl_setopt($this->curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
         }
 

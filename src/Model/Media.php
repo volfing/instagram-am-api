@@ -33,7 +33,8 @@ class Media extends LazyJsonMapper
         "numOfLikes" => "int",
         "type" => "string",
         "message" => "string",
-//        "comments" => "Comment[]",
+        "comments" => "Comment[]",
+        "likes" => "Like[]",
         "photos" => "Photo[]",
     ];
 }
