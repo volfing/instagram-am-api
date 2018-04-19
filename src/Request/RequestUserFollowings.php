@@ -28,14 +28,16 @@ class RequestUserFollowings extends AuthorizedRequest
         if (!empty($this->data['count'])) {
             $count_items = (int)$this->data['count'];
         }
-//        set max_id
-        $params_after = "";
-        if (isset($this->data['after']) && !empty($this->data['after'])) {
-            $params_after = ",\"after\":\"{$this->data['after']}\"";
-        }
+
+        $variables = [
+            'id' => $this->data['id'],
+            'first' => $count_items,
+            'params_after' => $this->data['after'],
+        ];
+        $variables = array_filter($variables);
         $params = [
             "query_hash" => QueryProperty::QUERY_HASH_USER_FOLLOWING,
-            "variables" => "{\"id\":\"" . $this->data['id'] . "\",\"first\":" . $count_items . $params_after . "}"
+            "variables" => json_encode($variables)
         ];
 
 

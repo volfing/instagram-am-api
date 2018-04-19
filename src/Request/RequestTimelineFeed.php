@@ -27,7 +27,6 @@ class RequestTimelineFeed extends AuthorizedRequest
             'fetch_like' => 10,
             'has_stories' => false,
         ];
-        $variables = array_filter($variables);
         $params = [
             'query_hash' => QueryProperty::QUERY_HASH_USER_TIMELINE_FEED,
             'variables' => json_encode($variables)
