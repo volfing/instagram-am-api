@@ -13,13 +13,14 @@ use LazyJsonMapper\LazyJsonMapper;
 
 /**
  * Class Media
- * @property $id
- * @property $owner
- * @property $dateOfPublish
- * @property $numOfComments
- * @property $numOfLikes
- * @property $type
- * @property $message
+ * @property string $id
+ * @property int $owner
+ * @property int $dateOfPublish
+ * @property int $numOfComments
+ * @property int $numOfLikes
+ * @property string $type
+ * @property string $message
+ * @property Photo[] $photos
  * @package InstagramAmAPI\Model
  */
 class Media extends LazyJsonMapper

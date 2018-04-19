@@ -10,9 +10,14 @@ namespace InstagramAmAPI\Request;
 
 
 use InstagramAmAPI\Model\Comment;
-use InstagramAmAPI\Model\Like;
 use InstagramAmAPI\Model\Photo;
+use InstagramAmAPI\Response\ResponseAccounts;
+use InstagramAmAPI\Response\ResponseMediaComments;
 
+/**
+ * Class Media
+ * @package InstagramAmAPI\Request
+ */
 class Media extends Request
 {
     /**
@@ -48,7 +53,7 @@ class Media extends Request
     }
 
     /**
-     * Комментарий под публикацией
+     * Оставляет комментарий под публикацией
      * @param string $message
      * @param string $mediaID
      * @return int $commentID
@@ -139,7 +144,7 @@ class Media extends Request
      * @param string $mediaID
      * @param int $count
      * @param null|string $maxID
-     * @return Comment[]
+     * @return ResponseMediaComments
      */
     public function getComments($mediaID, $count = 15, $maxID = null)
     {
@@ -166,7 +171,11 @@ class Media extends Request
                     'message' => $item['text'],
                 ]);
             }
-            return $comments;
+            return new ResponseMediaComments([
+                'next_max_id' => $max_id,
+                'count' => $comments_count,
+                'items' => $comments,
+            ]);
         }
         return null;
     }
@@ -174,8 +183,9 @@ class Media extends Request
     /**
      * Получение списка лайков к $mediaID
      * @param string $mediaID
+     * @param int $count
      * @param null|string $maxID
-     * @return Like[]
+     * @return ResponseAccounts
      */
     public function getLikes($mediaID, $count = 24, $maxID = null)
     {
@@ -203,7 +213,11 @@ class Media extends Request
                     'profile_pic_url' => $item['profile_pic_url'],
                 ];
             }
-            return $likes_users;
+            return new ResponseAccounts([
+                'next_max_id' => $max_id,
+                'count' => $likes_count,
+                'items' => $likes_users
+            ]);
         }
         return null;
     }

@@ -71,6 +71,10 @@ class Request
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
+        if (!empty($this->client->getProxy())) {
+            curl_setopt($this->curl, CURLOPT_PROXYTYPE, $this->client->getProxy());
+            curl_setopt($this->curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+        }
 
     }
 

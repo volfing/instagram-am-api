@@ -10,6 +10,22 @@ namespace InstagramAmAPI\Model;
 
 use LazyJsonMapper\LazyJsonMapper;
 
+/**
+ * Class Account
+ *
+ * @property string $id
+ * @property bool $is_private
+ * @property bool $is_business
+ * @property string $gender
+ * @property int $numOfFollowers
+ * @property int $numOfFollowings
+ * @property string $username
+ * @property string $full_name
+ * @property string $biography
+ * @property string $profile_pic_url
+ * @property Media[] $medias
+ * @package InstagramAmAPI\Model
+ */
 class Account extends LazyJsonMapper
 {
     const JSON_PROPERTY_MAP = [
@@ -23,7 +39,7 @@ class Account extends LazyJsonMapper
         "full_name" => "string",
         "biography" => "string",
         "profile_pic_url" => "string",
-//        "medias" => "Media[]",
+        "medias" => "Media[]",
 //        "followers" => "Account[]",
 //        "followings" => "Account[]",
 //        "avatar" => "Photo[]",

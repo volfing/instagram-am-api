@@ -9,6 +9,7 @@
 namespace InstagramAmAPI\Request;
 
 use InstagramAmAPI\Model\ModelHelper;
+use InstagramAmAPI\Response\ResponseMediaFeed;
 
 /**
  * Class Explore
@@ -19,9 +20,10 @@ class Explore extends Request
     /**
      * Поиск публикакций по хештегу
      * @param $tag
-     * @return Explore|array
+     * @return ResponseMediaFeed
      */
-    public function searchByTag($tag){
+    public function searchByTag($tag)
+    {
         $request = new RequestTagFeed($this->client, [
             "tag" => $tag
         ]);
@@ -29,8 +31,6 @@ class Explore extends Request
 
         if (is_array($response)) {
             $response = $response['graphql']['hashtag']['edge_hashtag_to_media'];
-
-//            TODO: использовать в будущем
             $count = $response['count'];
             $next_id = $response['page_info']['end_cursor'];
             $medias = [];
@@ -39,7 +39,11 @@ class Explore extends Request
                 $media = ModelHelper::loadMediaFromNode($node);
                 $medias[] = $media;
             }
-            return $medias;
+            return new ResponseMediaFeed([
+                'next_max_id' => $next_id,
+                'count' => $count,
+                'items' => $medias
+            ]);
         }
         return null;
     }
@@ -47,17 +51,16 @@ class Explore extends Request
     /**
      * Поиск публикакций по ID локации
      * @param $locationID
-     * @return Explore|array
+     * @return ResponseMediaFeed
      */
-    public function searchByLocationId($locationID){
+    public function searchByLocationId($locationID)
+    {
         $request = new RequestLocationFeed($this->client, [
             "location_id" => $locationID
         ]);
         $response = $request->send();
         if (is_array($response)) {
             $response = $response['graphql']['location']['edge_location_to_media'];
-
-//            TODO: использовать в будущем
             $count = $response['count'];
             $next_id = $response['page_info']['end_cursor'];
             $medias = [];
@@ -66,7 +69,11 @@ class Explore extends Request
                 $media = ModelHelper::loadMediaFromNode($node);
                 $medias[] = $media;
             }
-            return $medias;
+            return new ResponseMediaFeed([
+                'next_max_id' => $next_id,
+                'count' => $count,
+                'items' => $medias
+            ]);
         }
         return null;
     }
