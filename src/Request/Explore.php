@@ -78,4 +78,35 @@ class Explore extends Request
         return null;
     }
 
+    /**
+     * Search venues
+     * {
+     *      "venues": [
+     *          {
+     *              "lat": 55.755833333333,
+     *              "lng": 37.617777777778,
+     *              "address": "Moscow",
+     *              "external_id": "107881505913202",
+     *              "external_id_source": "facebook_places",
+     *              "name": "Moscow", "minimum_age": 0
+     *          }
+     *      ]
+     * }
+     *
+     * @param $latitude
+     * @param $longitude
+     * @return array
+     */
+    public function searchLocation($latitude, $longitude)
+    {
+        $request = new RequestSearchLocation($this->client, [
+            'query' => '',
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+        ]);
+        $response = $request->send();
+        return $response;
+    }
+
+
 }

@@ -23,7 +23,7 @@ use InstagramAmAPI\Exception\NotFoundInstagramException;
  */
 class Request
 {
-    protected $instagram_url = "https://instagram.com";
+    protected $instagram_url = "https://www.instagram.com";
 
     const INSTAGRAM_URL = 'https://www.instagram.com/';
     const API_URL = 'https://www.instagram.com/query/';
