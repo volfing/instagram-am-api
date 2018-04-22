@@ -8,10 +8,11 @@
 
 namespace InstagramAmAPI\Request;
 
+use InstagramAmAPI\Exception\BadResponseException;
 use InstagramAmAPI\Exception\InstagramException;
-use InstagramAmAPI\Model\Media;
 use InstagramAmAPI\Model\ModelHelper;
-use InstagramAmAPI\Model\Photo;
+use InstagramAmAPI\Response\ResponseAccounts;
+use InstagramAmAPI\Response\ResponseMediaFeed;
 
 /**
  * Class Account
@@ -21,7 +22,8 @@ class Account extends Request
 {
     /**
      * Получение информации об instagram аккаунте по его ID
-     * @return Account|array
+     * @param int $userID
+     * @return array|Account
      */
     public function getById($userID)
     {
@@ -35,7 +37,8 @@ class Account extends Request
     /**
      * Получение информации об instagram аккаунте по логину
      * @param string $username
-     * @return Account|array|null
+     * @return \InstagramAmAPI\Model\Account
+     * @throws BadResponseException
      */
     public function getByUsername($username)
     {
@@ -44,22 +47,23 @@ class Account extends Request
         ]);
         $response = $request->send();
         if (is_array($response)) {
-            $media = [];
-            foreach ($response["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"] as $media_node) {
+            $medias = [];
+            $response = $response["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"];
+            foreach ($response as $media_node) {
 //                TODO: Комментарии надо дополнительным запросов доставать.
                 $media_node = $media_node["node"];
                 $model = ModelHelper::loadMediaFromNode($media_node);
-                $media[] = $model;
+                $medias[] = $model;
             }
-            return [
+            return new \InstagramAmAPI\Model\Account([
                 "id" => $response["graphql"]["user"]["id"],
                 "username" => $response["graphql"]["user"]["username"],
                 "profile_pic_url" => $response["graphql"]["user"]["profile_pic_url"],
-                "media" => $media,
+                "medias" => $medias,
 
-            ];
+            ]);
         }
-        return null;
+        throw new BadResponseException("");
     }
 
     /**
@@ -142,6 +146,7 @@ class Account extends Request
      * Удаление публикации по ее id
      * @param $mediaID
      * @return bool
+     * @throws BadResponseException
      */
     public function deleteMediaById($mediaID)
     {
@@ -153,12 +158,16 @@ class Account extends Request
         if ($response['did_delete'] == 1) {
             return true;
         }
-        return null;
+        throw new BadResponseException("");
     }
 
     /**
      * Получение списка публикаций пользователя по его ID
-     * @return Media[]
+     * @param int $userID
+     * @param int $count
+     * @param null|string $maxID
+     * @return ResponseMediaFeed
+     * @throws BadResponseException
      */
     public function loadMediasById($userID, $count = 10, $maxID = null)
     {
@@ -169,15 +178,26 @@ class Account extends Request
         ]);
         $response = $request->send();
         if (is_array($response)) {
+            $response = $response["data"]["user"]["edge_owner_to_timeline_media"];
+            $next_max_id = null;
+            if ($response['page_info']['has_next_page']) {
+                $next_max_id = $response['page_info']['end_cursor'];
+            }
+            $count = $response['count'];
+            $response = $response['edges'];
             $media = [];
-            foreach ($response["data"]["user"]["edge_owner_to_timeline_media"]["edges"] as $media_node) {
+            foreach ($response as $media_node) {
                 $media_node = $media_node["node"];
                 $model = ModelHelper::loadMediaFromNode($media_node);
                 $media[] = $model;
             }
-            return $media;
+            return new ResponseMediaFeed([
+                'next_max_id' => $next_max_id,
+                'count' => $count,
+                'items' => $media
+            ]);
         }
-        return null;
+        throw new BadResponseException("");
     }
 
     /**
@@ -185,12 +205,12 @@ class Account extends Request
      * @param $username
      * @param int $count
      * @param null $maxID
-     * @return array|Media[]
+     * @return ResponseMediaFeed
      */
     public function loadMediasByUsername($username, $count = 10, $maxID = null)
     {
         $user = $this->getByUsername($username);
-        $user_id = $user['id'];
+        $user_id = $user->id;
         return $this->loadMediasById($user_id, $count, $maxID);
     }
 
@@ -200,7 +220,7 @@ class Account extends Request
      * @param $user_id
      * @param null $max_id
      * @param int $count
-     * @return array
+     * @return ResponseAccounts
      * @throws InstagramException
      */
     public function followers($user_id, $max_id = null, $count = 50)
@@ -229,9 +249,13 @@ class Account extends Request
                     'profile_pic_url' => $item['profile_pic_url'],
                 ]);
             }
-            return $followers;
+            return new ResponseAccounts([
+                'next_max_id' => $next_max_id,
+                'count' => $count,
+                'items' => $followers,
+            ]);
         }
-        throw new InstagramException("Bad response");
+        throw new BadResponseException("");
     }
 
     /**
@@ -240,8 +264,8 @@ class Account extends Request
      * @param $user_id
      * @param null $max_id
      * @param int $count
-     * @return array
-     * @throws InstagramException
+     * @return ResponseAccounts
+     * @throws BadResponseException
      */
     public function followings($user_id, $max_id = null, $count = 50)
     {
@@ -270,9 +294,47 @@ class Account extends Request
                     'profile_pic_url' => $item['profile_pic_url'],
                 ]);
             }
-            return $followings;
+            return new ResponseAccounts([
+                'next_max_id' => $next_max_id,
+                'count' => $count,
+                'items' => $followings,
+            ]);
         }
-        throw new InstagramException("Bad response");
+        throw new BadResponseException("");
+    }
+
+    /**
+     * @param int $count
+     * @param null|string $max_id
+     * @return ResponseMediaFeed
+     * @throws BadResponseException
+     */
+    public function timelineFeed($count = 12, $max_id = null)
+    {
+        $request = new RequestTimelineFeed($this->client, [
+            'count' => $count,
+            'max_id' => $max_id,
+        ]);
+        $response = $request->send();
+        if (is_array($response)) {
+            $response = $response['data']['user']['edge_web_feed_timeline'];
+            $next_max_id = null;
+            if ($response['page_info']['has_next_page']) {
+                $next_max_id = $response['page_info']['end_cursor'];
+            }
+            $response = $response['edges'];
+            $medias = [];
+            foreach ($response as $node) {
+                $node = $node['node'];
+                $medias[] = ModelHelper::loadMediaFromNode($node);
+            }
+            return new ResponseMediaFeed([
+                'next_max_id' => $next_max_id,
+                'count' => $count,
+                'items' => $medias,
+            ]);
+        }
+        throw new BadResponseException("");
     }
 
 }

@@ -27,15 +27,17 @@ class RequestMediaLikes extends NonAuthorizedRequest
         if (!empty($this->data['count'])) {
             $count_items = (int)$this->data['count'];
         }
-//        set max_id
-        $params_after = "";
-        if (isset($this->data['after']) && !empty($this->data['after'])) {
-            $params_after = ",\"after\":\"{$this->data['after']}\"";
-        }
+
+        $variables = [
+            'shortcode' => $this->data['shortcode'],
+            'first' => $count_items,
+            'after' => $this->data['after'],
+        ];
+        $variables = array_filter($variables);
 
         $params = [
             "query_hash" => QueryProperty::QUERY_HASH_MEDIA_LIKES,
-            "variables" => "{\"shortcode\":\"" . $this->data['shortcode'] . "\",\"first\":" . $count_items . $params_after . "}"
+            "variables" => json_encode($variables)
         ];
         parent::init($url, $params);
         $this->addHeader("User-Agent", "");

@@ -23,7 +23,7 @@ use InstagramAmAPI\Exception\NotFoundInstagramException;
  */
 class Request
 {
-    protected $instagram_url = "https://instagram.com";
+    protected $instagram_url = "https://www.instagram.com";
 
     const INSTAGRAM_URL = 'https://www.instagram.com/';
     const API_URL = 'https://www.instagram.com/query/';
@@ -68,9 +68,16 @@ class Request
         }
 
         $this->curl = curl_init($full_url);
+        curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, 0);
+        curl_setopt($this->curl, CURLOPT_TIMEOUT, 15);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
+
+        if (!empty($this->client->getProxy())) {
+            curl_setopt($this->curl, CURLOPT_PROXY, $this->client->getProxy());
+            curl_setopt($this->curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+        }
 
     }
 
@@ -289,7 +296,6 @@ class Request
         $this->preRequest();
         $this->initHeaders();
         $result = curl_exec($this->curl);
-        var_dump($result);
         $http_code = curl_getinfo($this->curl)['http_code'];
         switch ($http_code) {
             case 200:

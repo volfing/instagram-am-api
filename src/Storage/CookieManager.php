@@ -51,7 +51,9 @@ class CookieManager
      */
     public function setCookie($name, $value)
     {
-        $this->cookie_data[$name] = $value;
+        if (!empty($value) && ($value != '""')) {
+            $this->cookie_data[$name] = $value;
+        }
     }
 
     /**
