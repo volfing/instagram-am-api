@@ -48,7 +48,8 @@ class Account extends Request
         $response = $request->send();
         if (is_array($response)) {
             $medias = [];
-            $response = $response["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"];
+            $user_info = $response["graphql"]["user"];
+            $response = $user_info["edge_owner_to_timeline_media"]["edges"];
             foreach ($response as $media_node) {
 //                TODO: Комментарии надо дополнительным запросов доставать.
                 $media_node = $media_node["node"];
@@ -56,9 +57,9 @@ class Account extends Request
                 $medias[] = $model;
             }
             return new \InstagramAmAPI\Model\Account([
-                "id" => $response["graphql"]["user"]["id"],
-                "username" => $response["graphql"]["user"]["username"],
-                "profile_pic_url" => $response["graphql"]["user"]["profile_pic_url"],
+                "id" => $user_info["id"],
+                "username" => $user_info["username"],
+                "profile_pic_url" => $user_info["profile_pic_url"],
                 "medias" => $medias,
 
             ]);
