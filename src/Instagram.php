@@ -25,8 +25,12 @@ use InstagramAmAPI\Request\RequestLogin;
  */
 class Instagram
 {
+    /** @var  Client $client */
     private $client;
 
+    /**
+     * Instagram constructor.
+     */
     public function __construct()
     {
         $this->initSubmodules();
@@ -71,6 +75,9 @@ class Instagram
         throw new BadResponseException();
     }
 
+    /**
+     *
+     */
     private function initSubmodules()
     {
         $this->account = new Account($this->client);
@@ -78,11 +85,31 @@ class Instagram
         $this->explore = new Explore($this->client);
     }
 
+    /**
+     * @param string $username
+     * @param string $password
+     */
     public function setUser($username, $password)
     {
         $this->client = new Client($username, $password);
         $this->initSubmodules();
 
+    }
+
+    /**
+     * @param $proxy
+     */
+    public function setProxy($proxy)
+    {
+        $this->client->setProxy($proxy);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLogged()
+    {
+        return $this->client->isLogged();
     }
 
 }
