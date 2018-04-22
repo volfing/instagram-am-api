@@ -296,7 +296,6 @@ class Request
         $this->preRequest();
         $this->initHeaders();
         $result = curl_exec($this->curl);
-        var_dump($result);
         $http_code = curl_getinfo($this->curl)['http_code'];
         switch ($http_code) {
             case 200:

@@ -8,6 +8,8 @@
 
 namespace InstagramAmAPI;
 
+use InstagramAmAPI\Exception\BadResponseException;
+use InstagramAmAPI\Exception\NotAuthException;
 use InstagramAmAPI\Request\Account;
 use InstagramAmAPI\Request\Explore;
 use InstagramAmAPI\Request\Media;
@@ -43,6 +45,8 @@ class Instagram
     /**
      * @param $force
      * @return array|bool
+     * @throws BadResponseException
+     * @throws NotAuthException
      */
     private function _login($force)
     {
@@ -54,8 +58,17 @@ class Instagram
             "password" => $this->client->getPassword()
         ]);
         $response = $request->send();
-        return $response;
-
+        if (is_array($response)) {
+            if ($response['authenticated']) {
+                return true;
+            }
+            if (!$response['user']) {
+                throw new NotAuthException("Пользователь не существует.");
+            } else {
+                throw new NotAuthException("Неверный пароль.");
+            }
+        }
+        throw new BadResponseException();
     }
 
     private function initSubmodules()
