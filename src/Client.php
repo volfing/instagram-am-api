@@ -63,7 +63,7 @@ class Client
      */
     public function isLogged()
     {
-        return !empty($this->cookie->getCookie('sessionid'));
+        return (!empty($this->cookie->getCookie('sessionid'))) && ($this->cookie->getCookie('sessionid') != '""');
     }
 
     public function getUsername()
