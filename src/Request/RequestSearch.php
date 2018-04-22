@@ -27,17 +27,16 @@ class RequestSearch extends NonAuthorizedRequest
         $this->instagram_url = self::INSTAGRAM_URL;
         $url = "web/search/topsearch/";
 
-        $rank_token = 1;
+        $rank_token = 0.8;
         if (isset($this->data['rank_token']) && !empty($this->data['rank_token'])) {
             $rank_token = $this->data['rank_token'];
         }
         $params = [
-            "content" => "blended",
+            "context" => "blended",
             "query" => $this->data['query'],
             "rank_token" => $rank_token,
         ];
         parent::init($url, $params);
-
     }
 
 }

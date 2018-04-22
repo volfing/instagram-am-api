@@ -63,7 +63,7 @@ class ModelHelper
             "photos" => $photos,
         ];
 
-        if (isset($media_node['edge_media_to_comment'])) {
+        if (isset($media_node['edge_media_to_comment']) && isset($media_node['edge_media_to_comment']['edges'])) {
             $comments = [];
             foreach ($media_node['edge_media_to_comment']['edges'] as $comment_node) {
                 $comment_node = $comment_node['node'];
@@ -76,7 +76,7 @@ class ModelHelper
             }
             $data['comments'] = $comments;
         }
-        if (isset($media_node['edge_media_preview_like'])) {
+        if (isset($media_node['edge_media_preview_like']) && isset($media_node['edge_media_preview_like']['edges'])) {
             $likes = [];
             foreach ($media_node['edge_media_preview_like']['edges'] as $like_node) {
                 $like_node = $like_node['node'];
@@ -90,5 +90,25 @@ class ModelHelper
         }
         $model = new Media($data);
         return $model;
+    }
+
+    /**
+     * @param $node
+     * @return Location
+     */
+    public static function loadLocation($node)
+    {
+        $location = new Location([
+            'id' => $node['pk'],
+            'name' => $node['name'],
+            'address' => $node['address'],
+            'city' => $node['city'],
+            'short_name' => $node['short_name'],
+            'longitude' => $node['lng'],
+            'latitude' => $node['lat'],
+            'external_source' => $node['external_source'],
+            'facebook_places_id' => $node['facebook_places_id'],
+        ]);
+        return $location;
     }
 }

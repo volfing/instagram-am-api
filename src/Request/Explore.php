@@ -106,7 +106,7 @@ class Explore extends Request
     public function searchLocation($latitude, $longitude)
     {
         $request = new RequestSearchLocation($this->client, [
-            'query' => '',
+            'query' => 'girl',
             'latitude' => $latitude,
             'longitude' => $longitude,
         ]);
@@ -131,14 +131,58 @@ class Explore extends Request
         throw new BadResponseException("");
     }
 
+    /**
+     * @param $query
+     * @param int $rank_token
+     * @return array
+     * @throws BadResponseException
+     */
     public function search($query, $rank_token = 1)
     {
+        $query = str_replace(' ', '+', $query);
         $request = new RequestSearch($this->client, [
             'query' => $query,
             'rank_token' => $rank_token
         ]);
         $response = $request->send();
-        return $response;
+        if (is_array($response)) {
+            $response_users = [];
+            $response_places = [];
+            $response_hashtags = [];
+
+            foreach ($response['users'] as $user) {
+                $user = $user['user'];
+                $response_users[] = new \InstagramAmAPI\Model\Account([
+                    "id" => $user['pk'],
+                    "is_private" => $user['is_private'],
+                    "numOfFollowers" => $user['follower_count'],
+                    "username" => $user['username'],
+                    "full_name" => $user['full_name'],
+                    "profile_pic_url" => $user['profile_pic_url'],
+                ]);
+            }
+
+            foreach ($response['places'] as $place) {
+                $place = $place['place']['location'];
+                $response_places[] = ModelHelper::loadLocation($place);
+            }
+
+            foreach ($response['hashtags'] as $hashtag) {
+                $hashtag = $hashtag['hashtag'];
+                $response_hashtags[] = [
+                    'id' => $hashtag['id'],
+                    'name' => $hashtag['name'],
+                    'media_count' => $hashtag['media_count'],
+                ];
+            }
+
+            return [
+                'users' => $response_users,
+                'locations' => $response_places,
+                'hashtags' => $response_hashtags,
+            ];
+        }
+        throw new BadResponseException("");
     }
 
 
