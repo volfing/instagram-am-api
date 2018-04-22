@@ -20,6 +20,15 @@ use InstagramAmAPI\Response\ResponseMediaFeed;
  */
 class Account extends Request
 {
+
+    /**
+     * @return \InstagramAmAPI\Model\Account
+     */
+    public function getSelfInfo()
+    {
+        return $this->getByUsername($this->client->getUsername());
+    }
+
     /**
      * Получение информации об instagram аккаунте по его ID
      * @param int $userID
@@ -338,4 +347,32 @@ class Account extends Request
         throw new BadResponseException("");
     }
 
+    /**
+     * @return ResponseMediaFeed
+     */
+    public function getRecentStories()
+    {
+//        Получить список недавних историй.
+//        TODO
+    }
+
+    /**
+     * @param null $max_id
+     * @param null $search
+     * @return ResponseAccounts
+     */
+    public function getSelfFollowers($max_id = null, $search = null)
+    {
+//      TODO
+    }
+
+    /**
+     * @param null $max_id
+     * @param null $search
+     * @return ResponseAccounts
+     */
+    public function getSelfFollowings($max_id = null, $search = null)
+    {
+//        TODO
+    }
 }

@@ -23,6 +23,7 @@ use LazyJsonMapper\LazyJsonMapper;
  * @property string $full_name
  * @property string $biography
  * @property string $profile_pic_url
+ * @property int $media_count
  * @property Media[] $medias
  * @package InstagramAmAPI\Model
  */
@@ -35,6 +36,7 @@ class Account extends LazyJsonMapper
         "gender" => "string",
         "numOfFollowers" => "int",
         "numOfFollowings" => "int",
+        "media_count" => "int",
         "username" => "string",
         "full_name" => "string",
         "biography" => "string",

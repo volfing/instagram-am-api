@@ -22,11 +22,13 @@ class Explore extends Request
     /**
      * Поиск публикакций по хештегу
      * @param $tag
+     * @param $max_id
      * @return ResponseMediaFeed
      * @throws BadResponseException
      */
-    public function searchByTag($tag)
+    public function searchByTag($tag, $max_id)
     {
+//        TODO: добавить использование $max_id
         $request = new RequestTagFeed($this->client, [
             "tag" => $tag
         ]);
@@ -54,11 +56,13 @@ class Explore extends Request
     /**
      * Поиск публикакций по ID локации
      * @param $locationID
+     * @param $max_id
      * @return ResponseMediaFeed
      * @throws BadResponseException
      */
-    public function searchByLocationId($locationID)
+    public function searchByLocationId($locationID, $max_id)
     {
+//        TODO: добавить использование $max_id
         $request = new RequestLocationFeed($this->client, [
             "location_id" => $locationID
         ]);
@@ -100,13 +104,14 @@ class Explore extends Request
      *
      * @param $latitude
      * @param $longitude
+     * @param string $query
      * @return Venue[]
      * @throws BadResponseException
      */
-    public function searchLocation($latitude, $longitude)
+    public function searchLocation($latitude, $longitude, $query = "")
     {
         $request = new RequestSearchLocation($this->client, [
-            'query' => 'girl',
+            'query' => $query,
             'latitude' => $latitude,
             'longitude' => $longitude,
         ]);
