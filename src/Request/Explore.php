@@ -8,7 +8,9 @@
 
 namespace InstagramAmAPI\Request;
 
+use InstagramAmAPI\Exception\BadResponseException;
 use InstagramAmAPI\Model\ModelHelper;
+use InstagramAmAPI\Model\Venue;
 use InstagramAmAPI\Response\ResponseMediaFeed;
 
 /**
@@ -21,6 +23,7 @@ class Explore extends Request
      * Поиск публикакций по хештегу
      * @param $tag
      * @return ResponseMediaFeed
+     * @throws BadResponseException
      */
     public function searchByTag($tag)
     {
@@ -45,13 +48,14 @@ class Explore extends Request
                 'items' => $medias
             ]);
         }
-        return null;
+        throw new BadResponseException("");
     }
 
     /**
      * Поиск публикакций по ID локации
      * @param $locationID
      * @return ResponseMediaFeed
+     * @throws BadResponseException
      */
     public function searchByLocationId($locationID)
     {
@@ -75,7 +79,7 @@ class Explore extends Request
                 'items' => $medias
             ]);
         }
-        return null;
+        throw new BadResponseException("");
     }
 
     /**
@@ -88,14 +92,16 @@ class Explore extends Request
      *              "address": "Moscow",
      *              "external_id": "107881505913202",
      *              "external_id_source": "facebook_places",
-     *              "name": "Moscow", "minimum_age": 0
+     *              "name": "Moscow",
+     *              "minimum_age": 0
      *          }
      *      ]
      * }
      *
      * @param $latitude
      * @param $longitude
-     * @return array
+     * @return Venue[]
+     * @throws BadResponseException
      */
     public function searchLocation($latitude, $longitude)
     {
@@ -103,6 +109,33 @@ class Explore extends Request
             'query' => '',
             'latitude' => $latitude,
             'longitude' => $longitude,
+        ]);
+        $response = $request->send();
+        if (is_array($response)) {
+            $response = $response['venues'];
+            $venues = [];
+            foreach ($response as $item) {
+                $venue = new Venue([
+                    'latitude' => $item['lat'],
+                    'longitude' => $item['lng'],
+                    'address' => $item['address'],
+                    'external_id' => $item['external_id'],
+                    'external_id_source' => $item['external_id_source'],
+                    'minimum_age' => $item['minimum_age'],
+                ]);
+                $venues[] = $venue;
+
+            }
+            return $venues;
+        }
+        throw new BadResponseException("");
+    }
+
+    public function search($query, $rank_token = 1)
+    {
+        $request = new RequestSearch($this->client, [
+            'query' => $query,
+            'rank_token' => $rank_token
         ]);
         $response = $request->send();
         return $response;

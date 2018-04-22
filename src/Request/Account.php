@@ -8,6 +8,7 @@
 
 namespace InstagramAmAPI\Request;
 
+use InstagramAmAPI\Exception\BadResponseException;
 use InstagramAmAPI\Exception\InstagramException;
 use InstagramAmAPI\Model\ModelHelper;
 use InstagramAmAPI\Response\ResponseAccounts;
@@ -37,6 +38,7 @@ class Account extends Request
      * Получение информации об instagram аккаунте по логину
      * @param string $username
      * @return \InstagramAmAPI\Model\Account
+     * @throws BadResponseException
      */
     public function getByUsername($username)
     {
@@ -61,7 +63,7 @@ class Account extends Request
 
             ]);
         }
-        return null;
+        throw new BadResponseException("");
     }
 
     /**
@@ -144,6 +146,7 @@ class Account extends Request
      * Удаление публикации по ее id
      * @param $mediaID
      * @return bool
+     * @throws BadResponseException
      */
     public function deleteMediaById($mediaID)
     {
@@ -155,7 +158,7 @@ class Account extends Request
         if ($response['did_delete'] == 1) {
             return true;
         }
-        return null;
+        throw new BadResponseException("");
     }
 
     /**
@@ -164,6 +167,7 @@ class Account extends Request
      * @param int $count
      * @param null|string $maxID
      * @return ResponseMediaFeed
+     * @throws BadResponseException
      */
     public function loadMediasById($userID, $count = 10, $maxID = null)
     {
@@ -193,7 +197,7 @@ class Account extends Request
                 'items' => $media
             ]);
         }
-        return null;
+        throw new BadResponseException("");
     }
 
     /**
@@ -251,7 +255,7 @@ class Account extends Request
                 'items' => $followers,
             ]);
         }
-        throw new InstagramException("Bad response");
+        throw new BadResponseException("");
     }
 
     /**
@@ -261,7 +265,7 @@ class Account extends Request
      * @param null $max_id
      * @param int $count
      * @return ResponseAccounts
-     * @throws InstagramException
+     * @throws BadResponseException
      */
     public function followings($user_id, $max_id = null, $count = 50)
     {
@@ -296,13 +300,14 @@ class Account extends Request
                 'items' => $followings,
             ]);
         }
-        throw new InstagramException("Bad response");
+        throw new BadResponseException("");
     }
 
     /**
      * @param int $count
      * @param null|string $max_id
      * @return ResponseMediaFeed
+     * @throws BadResponseException
      */
     public function timelineFeed($count = 12, $max_id = null)
     {
@@ -329,7 +334,7 @@ class Account extends Request
                 'items' => $medias,
             ]);
         }
-
+        throw new BadResponseException("");
     }
 
 }
