@@ -60,7 +60,6 @@ class Account extends Request
             $user_info = $response["graphql"]["user"];
             $response = $user_info["edge_owner_to_timeline_media"]["edges"];
             foreach ($response as $media_node) {
-//                TODO: Комментарии надо дополнительным запросов доставать.
                 $media_node = $media_node["node"];
                 $model = ModelHelper::loadMediaFromNode($media_node);
                 $medias[] = $model;
@@ -363,7 +362,9 @@ class Account extends Request
      */
     public function getSelfFollowers($max_id = null, $search = null)
     {
-//      TODO
+        $user = $this->getByUsername($this->client->getUsername());
+        $user_id = $user->id;
+        return $this->followers($user_id, $max_id);
     }
 
     /**
@@ -373,6 +374,8 @@ class Account extends Request
      */
     public function getSelfFollowings($max_id = null, $search = null)
     {
-//        TODO
+        $user = $this->getByUsername($this->client->getUsername());
+        $user_id = $user->id;
+        return $this->followings($user_id, $max_id);
     }
 }
