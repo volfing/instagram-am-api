@@ -9,10 +9,17 @@
 namespace InstagramAmAPI\Request;
 
 
+use InstagramAmAPI\Client;
+
 class Request
 {
+    /** @var  Client $client */
     protected $client;
 
+    /**
+     * Request constructor.
+     * @param $client
+     */
     function __construct(&$client)
     {
         $this->client = $client;

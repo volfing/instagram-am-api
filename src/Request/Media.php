@@ -56,10 +56,12 @@ class Media extends Request
      * Оставляет комментарий под публикацией
      * @param string $message
      * @param string $mediaID
+     * @param null $replyCommentId
      * @return int $commentID
      */
-    public function comment($message, $mediaID)
+    public function comment($message, $mediaID, $replyCommentId = null)
     {
+//        TODO: использовать replyCommentId
         $request = new RequestMediaComment($this->client, [
             'message' => $message,
             'id' => $mediaID
