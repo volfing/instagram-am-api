@@ -86,8 +86,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             case "getSearch":
                 $result = $instagram->explore->search($_POST['search_id']);
                 break;
+            case "getReels":
+                $result = $instagram->account->getStoriesReels();
+                break;
             case "getStories":
-                $result = $instagram->account->getRecentStories();
+                $result = $instagram->account->getStoriesFeed($_POST['search_id']);
                 break;
             default:
                 break;
@@ -173,6 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <input type="submit" name="submit" value="getFollowings">
                 <input type="submit" name="submit" value="getTimeline">
                 <input type="submit" name="submit" value="getSearch">
+                <input type="submit" name="submit" value="getReels">
                 <input type="submit" name="submit" value="getStories">
             </div>
         </div>

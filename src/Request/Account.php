@@ -350,18 +350,19 @@ class Account extends Request
      * @return array
      * @throws BadResponseException
      */
-    public function getRecentStories()
+    public function getStoriesReels()
     {
-        $request = new RequestStories($this->client);
+        $request = new RequestStoriesReels($this->client);
         $response = $request->send();
         if (is_array($response)) {
             $response = $response['data']['user']['feed_reels_tray']['edge_reels_tray_to_reel']['edges'];
             $stories = [];
             foreach ($response as $item) {
+                $item = $item['node'];
                 $stories[] = [
                     'id' => $item['id'],
                     'expiring_at' => $item['expiring_at'],
-                    '1524485188' => $item['1524485188'],
+                    'latest_reel_media' => $item['latest_reel_media'],
                     'ranked_position' => $item['ranked_position'],
                     'seen' => $item['seen'],
                     'seen_ranked_position' => $item['seen_ranked_position'],
@@ -373,7 +374,23 @@ class Account extends Request
             }
             return $response;
         }
-        throw new BadResponseException("aaa");
+        throw new BadResponseException("");
+    }
+
+    /**
+     * @param $reel_ids
+     * @return array
+     */
+    public function getStoriesFeed($reel_ids)
+    {
+//        TODO: не работает
+        return null;
+        $request = new RequestStoriesFeed($this->client, [
+            'reel_ids' => [ $reel_ids ]
+        ]);
+        $response = $request->send();
+        return $response;
+
     }
 
     /**
