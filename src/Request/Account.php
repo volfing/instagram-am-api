@@ -347,12 +347,33 @@ class Account extends Request
     }
 
     /**
-     * @return ResponseMediaFeed
+     * @return array
+     * @throws BadResponseException
      */
     public function getRecentStories()
     {
-//        Получить список недавних историй.
-//        TODO
+        $request = new RequestStories($this->client);
+        $response = $request->send();
+        if (is_array($response)) {
+            $response = $response['data']['user']['feed_reels_tray']['edge_reels_tray_to_reel']['edges'];
+            $stories = [];
+            foreach ($response as $item) {
+                $stories[] = [
+                    'id' => $item['id'],
+                    'expiring_at' => $item['expiring_at'],
+                    '1524485188' => $item['1524485188'],
+                    'ranked_position' => $item['ranked_position'],
+                    'seen' => $item['seen'],
+                    'seen_ranked_position' => $item['seen_ranked_position'],
+                    'owner' => [
+                        'id' => $item['owner']['id'],
+                        'username' => $item['owner']['username'],
+                    ]
+                ];
+            }
+            return $response;
+        }
+        throw new BadResponseException("aaa");
     }
 
     /**
