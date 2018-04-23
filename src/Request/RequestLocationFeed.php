@@ -9,25 +9,36 @@
 namespace InstagramAmAPI\Request;
 
 
+use InstagramAmAPI\AuthorizedRequest;
 use InstagramAmAPI\NonAuthorizedRequest;
 
 /**
  * Class RequestLocationFeed
  * @package InstagramAmAPI\Request
  */
-class RequestLocationFeed extends NonAuthorizedRequest
+class RequestLocationFeed extends AuthorizedRequest
 {
     /**
      * @inheritdoc
      */
     protected function init($url = "", $params = null)
     {
-        $url = "explore/locations/" . $this->data['location_id'] . "/";
+
+        $this->instagram_url = self::GRAPHQL_API_URL;
+        $url = "";
+
+        $variables = [
+            'id' => $this->data['location_id'],
+            'first' => 12,
+            'after' => $this->data['after']
+        ];
+        $variables = array_filter($variables);
         $params = [
-            "__a" => 1
+            'query_hash' => QueryProperty::QUERY_HASH_LOCATION_FEED,
+            'variables' => json_encode($variables)
         ];
         parent::init($url, $params);
-        $this->addQuerySignature($params, "/" . $url);
+        $this->addQuerySignature($params);
     }
 
 

@@ -9,7 +9,8 @@
 namespace InstagramAmAPI;
 
 use InstagramAmAPI\Exception\BadResponseException;
-use InstagramAmAPI\Exception\NotAuthException;
+use InstagramAmAPI\Exception\IncorrectPasswordException;
+use InstagramAmAPI\Exception\InvalidUserException;
 use InstagramAmAPI\Request\Account;
 use InstagramAmAPI\Request\Explore;
 use InstagramAmAPI\Request\Media;
@@ -25,8 +26,12 @@ use InstagramAmAPI\Request\RequestLogin;
  */
 class Instagram
 {
+    /** @var  Client $client */
     private $client;
 
+    /**
+     * Instagram constructor.
+     */
     public function __construct()
     {
         $this->initSubmodules();
@@ -46,7 +51,8 @@ class Instagram
      * @param $force
      * @return array|bool
      * @throws BadResponseException
-     * @throws NotAuthException
+     * @throws IncorrectPasswordException
+     * @throws InvalidUserException
      */
     private function _login($force)
     {
@@ -63,14 +69,17 @@ class Instagram
                 return true;
             }
             if (!$response['user']) {
-                throw new NotAuthException("Пользователь не существует.");
+                throw new InvalidUserException("Пользователь не существует.");
             } else {
-                throw new NotAuthException("Неверный пароль.");
+                throw new IncorrectPasswordException("Неверный пароль.");
             }
         }
         throw new BadResponseException();
     }
 
+    /**
+     *
+     */
     private function initSubmodules()
     {
         $this->account = new Account($this->client);
@@ -78,11 +87,31 @@ class Instagram
         $this->explore = new Explore($this->client);
     }
 
+    /**
+     * @param string $username
+     * @param string $password
+     */
     public function setUser($username, $password)
     {
         $this->client = new Client($username, $password);
         $this->initSubmodules();
 
+    }
+
+    /**
+     * @param $proxy
+     */
+    public function setProxy($proxy)
+    {
+        $this->client->setProxy($proxy);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLogged()
+    {
+        return $this->client->isLogged();
     }
 
 }

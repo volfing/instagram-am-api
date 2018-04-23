@@ -20,6 +20,15 @@ use InstagramAmAPI\Response\ResponseMediaFeed;
  */
 class Account extends Request
 {
+
+    /**
+     * @return \InstagramAmAPI\Model\Account
+     */
+    public function getSelfInfo()
+    {
+        return $this->getByUsername($this->client->getUsername());
+    }
+
     /**
      * Получение информации об instagram аккаунте по его ID
      * @param int $userID
@@ -51,7 +60,6 @@ class Account extends Request
             $user_info = $response["graphql"]["user"];
             $response = $user_info["edge_owner_to_timeline_media"]["edges"];
             foreach ($response as $media_node) {
-//                TODO: Комментарии надо дополнительным запросов доставать.
                 $media_node = $media_node["node"];
                 $model = ModelHelper::loadMediaFromNode($media_node);
                 $medias[] = $model;
@@ -338,4 +346,74 @@ class Account extends Request
         throw new BadResponseException("");
     }
 
+    /**
+     * @return array
+     * @throws BadResponseException
+     */
+    public function getStoriesReels()
+    {
+        $request = new RequestStoriesReels($this->client);
+        $response = $request->send();
+        if (is_array($response)) {
+            $response = $response['data']['user']['feed_reels_tray']['edge_reels_tray_to_reel']['edges'];
+            $stories = [];
+            foreach ($response as $item) {
+                $item = $item['node'];
+                $stories[] = [
+                    'id' => $item['id'],
+                    'expiring_at' => $item['expiring_at'],
+                    'latest_reel_media' => $item['latest_reel_media'],
+                    'ranked_position' => $item['ranked_position'],
+                    'seen' => $item['seen'],
+                    'seen_ranked_position' => $item['seen_ranked_position'],
+                    'owner' => [
+                        'id' => $item['owner']['id'],
+                        'username' => $item['owner']['username'],
+                    ]
+                ];
+            }
+            return $response;
+        }
+        throw new BadResponseException("");
+    }
+
+    /**
+     * @param $reel_ids
+     * @return array
+     */
+    public function getStoriesFeed($reel_ids)
+    {
+//        TODO: не работает
+        return null;
+        $request = new RequestStoriesFeed($this->client, [
+            'reel_ids' => [ $reel_ids ]
+        ]);
+        $response = $request->send();
+        return $response;
+
+    }
+
+    /**
+     * @param null $max_id
+     * @param null $search
+     * @return ResponseAccounts
+     */
+    public function getSelfFollowers($max_id = null, $search = null)
+    {
+        $user = $this->getByUsername($this->client->getUsername());
+        $user_id = $user->id;
+        return $this->followers($user_id, $max_id);
+    }
+
+    /**
+     * @param null $max_id
+     * @param null $search
+     * @return ResponseAccounts
+     */
+    public function getSelfFollowings($max_id = null, $search = null)
+    {
+        $user = $this->getByUsername($this->client->getUsername());
+        $user_id = $user->id;
+        return $this->followings($user_id, $max_id);
+    }
 }

@@ -22,18 +22,20 @@ class Explore extends Request
     /**
      * Поиск публикакций по хештегу
      * @param $tag
+     * @param $max_id
      * @return ResponseMediaFeed
      * @throws BadResponseException
      */
-    public function searchByTag($tag)
+    public function searchByTag($tag, $max_id = null)
     {
         $request = new RequestTagFeed($this->client, [
-            "tag" => $tag
+            "tag" => $tag,
+            "after" => $max_id
         ]);
         $response = $request->send();
 
         if (is_array($response)) {
-            $response = $response['graphql']['hashtag']['edge_hashtag_to_media'];
+            $response = $response['data']['hashtag']['edge_hashtag_to_media'];
             $count = $response['count'];
             $next_id = $response['page_info']['end_cursor'];
             $medias = [];
@@ -54,17 +56,19 @@ class Explore extends Request
     /**
      * Поиск публикакций по ID локации
      * @param $locationID
+     * @param $max_id
      * @return ResponseMediaFeed
      * @throws BadResponseException
      */
-    public function searchByLocationId($locationID)
+    public function searchByLocationId($locationID, $max_id = null)
     {
         $request = new RequestLocationFeed($this->client, [
-            "location_id" => $locationID
+            "location_id" => $locationID,
+            "after" => $max_id
         ]);
         $response = $request->send();
         if (is_array($response)) {
-            $response = $response['graphql']['location']['edge_location_to_media'];
+            $response = $response['data']['location']['edge_location_to_media'];
             $count = $response['count'];
             $next_id = $response['page_info']['end_cursor'];
             $medias = [];
@@ -100,13 +104,14 @@ class Explore extends Request
      *
      * @param $latitude
      * @param $longitude
+     * @param string $query
      * @return Venue[]
      * @throws BadResponseException
      */
-    public function searchLocation($latitude, $longitude)
+    public function searchLocation($latitude, $longitude, $query = "")
     {
         $request = new RequestSearchLocation($this->client, [
-            'query' => 'girl',
+            'query' => $query,
             'latitude' => $latitude,
             'longitude' => $longitude,
         ]);

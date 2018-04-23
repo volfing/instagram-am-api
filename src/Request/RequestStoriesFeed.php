@@ -2,42 +2,37 @@
 /**
  * Created by PhpStorm.
  * User: Anton Vasiliev <bysslaev@gmail.com>
- * Date: 17/04/2018
- * Time: 19:42
+ * Date: 23/04/2018
+ * Time: 20:30
  */
 
 namespace InstagramAmAPI\Request;
 
 
-use InstagramAmAPI\NonAuthorizedRequest;
+use InstagramAmAPI\AuthorizedRequest;
 
 /**
- * Class RequestTagFeed
+ * Class RequestStoriesFeed
  * @package InstagramAmAPI\Request
  */
-class RequestTagFeed extends NonAuthorizedRequest
+class RequestStoriesFeed extends AuthorizedRequest
 {
-    /**
-     * @inheritdoc
-     */
     protected function init($url = "", $params = null)
     {
         $this->instagram_url = self::GRAPHQL_API_URL;
-        $url = "";
-
         $variables = [
-            'tag_name' => $this->data['tag'],
-            'first' => 10,
-            'after' => $this->data['after']
+            'reel_ids' => json_encode($this->data['reel_ids']),
+            'tag_names' => $this->data['tag_names'],
+            'location_ids' => $this->data['location_ids'],
+            'precomposed_overlay' => false,
         ];
         $variables = array_filter($variables);
         $params = [
-            'query_hash' => QueryProperty::QUERY_HASH_TAG_FEED,
+            'query_hash' => QueryProperty::QUERY_HASH_STORIES_FEED,
             'variables' => json_encode($variables)
         ];
         parent::init($url, $params);
-        $this->addQuerySignature($params, "/" . $url);
+        $this->addQuerySignature($params);
     }
-
 
 }
