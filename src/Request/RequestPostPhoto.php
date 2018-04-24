@@ -53,24 +53,29 @@ Content-Disposition: form-data; name=\"media_type\"
 1
 {$boundary}--
         ";
+        $data = [
+            'photo' => $this->data['photo_data']
+        ];
         $this->addHeader("User-Agent", Client::MOBILE_USER_AGENT);
         $this->addHeader("Referer", "https://www.instagram.com/create/crop/");
         $this->addHeader("Content-Type", "multipart/form-data; boundary=----WebKitFormBoundary{$boundary_teil}");
         $this->addHeader("Content-Length", strlen($body));
-        $this->setPost(true);
+        $this->setPostData($files);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function send()
     {
         $response = parent::send();
 
-//        TODO: Второй запрос на добавление описания
-        $url = "create/configure/";
         $params = [
             "upload_id" => $response["upload_id"],
             "caption" => $this->data["message"],
         ];
-//        make new request...
+        $configureRequest = new RequestConfigurePhoto($this->client, $params);
+        $response = $configureRequest->send();
         return $response;
     }
 
