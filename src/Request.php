@@ -76,7 +76,6 @@ class Request
 
         if (!empty($this->client->getProxy())) {
             curl_setopt($this->curl, CURLOPT_PROXY, $this->client->getProxy());
-            curl_setopt($this->curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
         }
 
     }

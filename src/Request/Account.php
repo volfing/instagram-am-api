@@ -88,7 +88,8 @@ class Account extends Request
      */
     public function followById($userID)
     {
-        $response = new RequestFollow($this->client, ['id' => $userID]);
+        $request = new RequestFollow($this->client, ['id' => $userID]);
+        $response = $request->send();
         if ($response['result'] == 'following') {
             return true;
         }
