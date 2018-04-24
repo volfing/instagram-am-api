@@ -11,6 +11,7 @@ namespace InstagramAmAPI;
 use InstagramAmAPI\Exception\InstagramException;
 use InstagramAmAPI\Exception\ForbiddenInstagramException;
 use InstagramAmAPI\Exception\NotFoundInstagramException;
+use InstagramAmAPI\Exception\TooManyRequestsException;
 
 
 /**
@@ -306,6 +307,9 @@ class Request
                 break;
             case 404:
                 throw new NotFoundInstagramException("Http code: {$http_code}");
+                break;
+            case 429:
+                throw new TooManyRequestsException();
                 break;
             default:
                 throw new InstagramException("Http code: {$http_code}");

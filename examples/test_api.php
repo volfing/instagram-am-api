@@ -92,6 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             case "getStories":
                 $result = $instagram->account->getStoriesFeed($_POST['search_id']);
                 break;
+            case "getSelfInfo":
+                $result = $instagram->account->getSelfInfo();
+                break;
             default:
                 break;
         }
@@ -178,6 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <input type="submit" name="submit" value="getSearch">
                 <input type="submit" name="submit" value="getReels">
                 <input type="submit" name="submit" value="getStories">
+                <input type="submit" name="submit" value="getSelfInfo">
             </div>
         </div>
     </form>
