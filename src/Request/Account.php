@@ -67,6 +67,8 @@ class Account extends Request
             return new \InstagramAmAPI\Model\Account([
                 "id" => $user_info["id"],
                 "username" => $user_info["username"],
+                "biography" => $user_info["biography"],
+                "is_private" => $user_info["is_private"],
                 "profile_pic_url" => $user_info["profile_pic_url"],
                 "medias" => $medias,
                 "numOfFollowers" => $user_info['edge_followed_by']['count'],
