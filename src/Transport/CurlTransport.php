@@ -107,6 +107,8 @@ class CurlTransport implements ITransport
         curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, 0);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($this->curl, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
         $this->setTimeout(15);
     }
 
