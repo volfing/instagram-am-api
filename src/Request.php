@@ -12,13 +12,15 @@ use InstagramAmAPI\Exception\InstagramException;
 use InstagramAmAPI\Exception\ForbiddenInstagramException;
 use InstagramAmAPI\Exception\NotFoundInstagramException;
 use InstagramAmAPI\Exception\TooManyRequestsException;
+use InstagramAmAPI\Transport\CurlTransport;
+use InstagramAmAPI\Transport\ITransport;
 
 
 /**
  * Class Request
  * @property array $data
  * @property array $headers
- * @property $curl
+ * @property ITransport $transport
  * @property Client $client
  * @package InstagramAmAPI
  */
@@ -30,7 +32,8 @@ class Request
     const API_URL = 'https://www.instagram.com/query/';
     const GRAPHQL_API_URL = 'https://www.instagram.com/graphql/query/';
 
-    protected $curl;
+    /** @var  ITransport */
+    protected $transport;
     protected $data;
     private $headers;
     protected $client;
@@ -42,11 +45,18 @@ class Request
      */
     public function __construct($client, $data = [])
     {
-        $this->curl = null;
+        $this->transport = new CurlTransport();
         $this->data = $data;
         $this->headers = false;
         $this->client = $client;
+    }
 
+    /**
+     * @param ITransport $transport
+     */
+    public function setTransport(ITransport $transport)
+    {
+        $this->transport = $transport;
     }
 
     /**
@@ -68,15 +78,10 @@ class Request
             $full_url .= implode("&", $params);
         }
 
-        $this->curl = curl_init($full_url);
-        curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, 0);
-        curl_setopt($this->curl, CURLOPT_TIMEOUT, 15);
-        curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($this->curl, CURLOPT_FOLLOWLOCATION, false);
-        curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
-
+        $this->transport->setUrl($full_url);
+        $this->transport->init();
         if (!empty($this->client->getProxy())) {
-            curl_setopt($this->curl, CURLOPT_PROXY, $this->client->getProxy());
+            $this->transport->setProxy($this->client->getProxy());
         }
 
     }
@@ -91,11 +96,10 @@ class Request
     private function initRequest()
     {
         $this->client->cookie->loadCookie();
-        $this->curl = curl_init(self::INSTAGRAM_URL);
-        curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($this->curl, CURLOPT_COOKIEFILE, "");
-        $result = curl_exec($this->curl);
-        $http_code = curl_getinfo($this->curl)['http_code'];
+        $this->transport->setUrl(self::INSTAGRAM_URL);
+        $this->transport->init();
+        $result = $this->transport->send();
+        $http_code = $this->transport->getRequestInfo()['http_code'];
         switch ($http_code) {
             case 200:
 //                ok
@@ -121,7 +125,7 @@ class Request
         }
         $this->client->cookie->setCookie("rhx_gis", $rhx_gis);
         $this->client->cookie->saveCookie();
-        curl_close($this->curl);
+        $this->transport->close();
     }
 
     /**
@@ -151,8 +155,7 @@ class Request
                 }
             }
         }
-
-        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $result_headers);
+        $this->transport->setHeaders($result_headers);
     }
 
     /**
@@ -161,7 +164,7 @@ class Request
     protected function setPost($post_flag)
     {
         if ($post_flag) {
-            curl_setopt($this->curl, CURLOPT_POST, true);
+            $this->transport->setPost(true);
         }
     }
 
@@ -173,7 +176,7 @@ class Request
     {
         if (!empty($data)) {
             $this->setPost(true);
-            curl_setopt($this->curl, CURLOPT_POSTFIELDS, http_build_query($data));
+            $this->transport->setPostData($data);
         }
     }
 
@@ -200,7 +203,7 @@ class Request
      */
     protected function saveCookie()
     {
-        $cookie = curl_getinfo($this->curl, CURLINFO_COOKIELIST);
+        $cookie = $this->transport->getCookie();
         $this->client->cookie->saveCurlCookie($cookie);
     }
 
@@ -295,8 +298,8 @@ class Request
         $this->init();
         $this->preRequest();
         $this->initHeaders();
-        $result = curl_exec($this->curl);
-        $http_code = curl_getinfo($this->curl)['http_code'];
+        $result = $this->transport->send();
+        $http_code = $this->transport->getRequestInfo()['http_code'];
         switch ($http_code) {
             case 200:
 //                ok
@@ -325,8 +328,8 @@ class Request
 
     public function __destruct()
     {
-        if (!is_null($this->curl)) {
-            curl_close($this->curl);
+        if (!is_null($this->transport)) {
+            $this->transport->close();
         }
     }
 
