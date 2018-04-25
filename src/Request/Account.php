@@ -67,8 +67,13 @@ class Account extends Request
             return new \InstagramAmAPI\Model\Account([
                 "id" => $user_info["id"],
                 "username" => $user_info["username"],
+                "biography" => $user_info["biography"],
+                "is_private" => $user_info["is_private"],
                 "profile_pic_url" => $user_info["profile_pic_url"],
                 "medias" => $medias,
+                "numOfFollowers" => $user_info['edge_followed_by']['count'],
+                "numOfFollowings" => $user_info['edge_follow']['count'],
+                "media_count" => $user_info['edge_owner_to_timeline_media']['count'],
 
             ]);
         }
@@ -88,8 +93,12 @@ class Account extends Request
      */
     public function followById($userID)
     {
-        $response = new RequestFollow($this->client, ['id' => $userID]);
+        $request = new RequestFollow($this->client, ['id' => $userID]);
+        $response = $request->send();
         if ($response['result'] == 'following') {
+            return true;
+        }
+        if ($response['result'] == 'requested') {
             return true;
         }
         return false;

@@ -95,7 +95,6 @@ class Instagram
     {
         $this->client = new Client($username, $password);
         $this->initSubmodules();
-
     }
 
     /**
@@ -104,6 +103,7 @@ class Instagram
     public function setProxy($proxy)
     {
         $this->client->setProxy($proxy);
+        $this->initSubmodules();
     }
 
     /**

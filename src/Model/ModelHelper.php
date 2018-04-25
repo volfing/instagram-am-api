@@ -38,12 +38,13 @@ class ModelHelper
                 ]);
             }
         }
-        $message = $media_node["edge_media_to_caption"]["edges"];
-        if (is_array($message) && !empty($message)) {
-            if (isset($message[0]["text"])) {
-                $message = $message[0]["text"];
-            } elseif (isset($message[0]["node"])) {
-                $message = $message[0]["node"]["text"];
+        $message = "";
+        $message_node = $media_node["edge_media_to_caption"]["edges"];
+        if (is_array($message_node) && !empty($message_node)) {
+            if (isset($message_node[0]["text"])) {
+                $message = $message_node[0]["text"];
+            } elseif (isset($message_node[0]["node"])) {
+                $message = $message_node[0]["node"]["text"];
             }
         }
         $type = "image";
