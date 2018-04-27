@@ -25,6 +25,7 @@
     }
   },
   "require": {
-    "lazyjsonmapper/lazyjsonmapper": "^1.6.1"
+    "lazyjsonmapper/lazyjsonmapper": "^1.6.1",
+    "guzzlehttp/guzzle": "^6.3"
   }
 }
