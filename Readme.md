@@ -1,5 +1,5 @@
 # Instagram web API
-version 0.1.9
+version 0.1.10
 
 ### Install library via Composer
 ```

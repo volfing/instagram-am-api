@@ -96,8 +96,8 @@ class Instagram
      */
     public function setUser($username, $password)
     {
-        $this->client->setUsername($username);
         $this->client->setPassword($password);
+        $this->client->setUsername($username);
         $this->initSubmodules();
     }
 

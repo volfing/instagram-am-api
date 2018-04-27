@@ -36,7 +36,7 @@ class Client
         $this->username = $username;
         $this->password = $password;
         $this->cookie = new CookieManager();
-        $this->cookie->setCookieFile($username);
+        $this->cookie->setCookieFile($this->getUsername() . "_" . sha1($this->getPassword()));
         $this->cookie->loadCookie();
     }
 
@@ -97,6 +97,8 @@ class Client
     public function setUsername($username)
     {
         $this->username = $username;
+        $this->cookie->setCookieFile($this->getUsername() . "_" . sha1($this->getPassword()));
+        $this->cookie->loadCookie();
     }
 
     public function setPassword($password)
