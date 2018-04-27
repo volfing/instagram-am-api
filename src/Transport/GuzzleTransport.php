@@ -9,7 +9,6 @@
 namespace InstagramAmAPI\Transport;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
 use InstagramAmAPI\Exception\ChallengeRequiredException;
@@ -111,57 +110,37 @@ class GuzzleTransport implements ITransport
         return $cookies;
     }
 
+    /**
+     * @return bool|string
+     * @throws ChallengeRequiredException
+     * @throws ForbiddenInstagramException
+     * @throws InstagramException
+     * @throws InvalidProxyException
+     * @throws InvalidRequestMethodException
+     * @throws NotFoundInstagramException
+     * @throws TooManyRequestsException
+     */
     public function send()
     {
         try {
             $this->client = new Client(['cookies' => true]);
             $this->response = $this->client->request($this->method, $this->url, $this->options);
 
-        } catch (ClientException $e) {
+        } catch (RequestException $e) {
             $http_code = $e->getCode();
             switch ($e->getCode()) {
                 case 200:
 //                ok
                     break;
-                case 403:
-                    throw new ForbiddenInstagramException("InvalidInputParams");
-                    break;
                 case 400:
-
                     $response = json_decode($e->getResponse()->getBody()->getContents(), true);
                     if ($response['message'] == 'checkpoint_required') {
                         throw new ChallengeRequiredException("ChallengeRequired");
                     }
                     throw new InstagramException("Http code: {$http_code}");
                     break;
-                case 404:
-                    throw new NotFoundInstagramException("NotFound");
-                    break;
-                case 405:
-                    throw new InvalidRequestMethodException("InvalidRequestMethod");
-                    break;
-                case 407:
-                    throw new InvalidProxyException("InvalidProxy");
-                    break;
-                case 429:
-                    throw new TooManyRequestsException("TooManyRequests");
-                    break;
-                default:
-                    throw new InstagramException("Http code: {$http_code}");
-                    break;
-            }
-        } catch (RequestException $e) {
-
-            $http_code = $e->getCode();
-            switch ($e->getCode()) {
-                case 200:
-//                ok
-                    break;
                 case 403:
                     throw new ForbiddenInstagramException("InvalidInputParams");
-                    break;
-                case 400:
-                    throw new ChallengeRequiredException("NotFound");
                     break;
                 case 404:
                     throw new NotFoundInstagramException("NotFound");

@@ -79,7 +79,6 @@ class Request
 
         $this->transport->setUrl($full_url);
         $this->transport->init();
-        $this->transport->setPost(true);
         if (!empty($this->client->getProxy())) {
             $this->transport->setProxy($this->client->getProxy());
         }

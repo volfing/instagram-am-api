@@ -8,6 +8,7 @@
 
 namespace InstagramAmAPI\Transport;
 
+use InstagramAmAPI\Exception\ChallengeRequiredException;
 use InstagramAmAPI\Exception\ForbiddenInstagramException;
 use InstagramAmAPI\Exception\InstagramException;
 use InstagramAmAPI\Exception\InvalidProxyException;
@@ -147,6 +148,13 @@ class CurlTransport implements ITransport
             case 200:
 //                ok
                 break;
+            case 400:
+                $response = json_decode($result, true);
+                if ($response['message'] == 'checkpoint_required') {
+                    throw new ChallengeRequiredException("ChallengeRequired");
+                }
+                throw new InstagramException("Http code: {$http_code}");
+                break;
             case 403:
                 throw new ForbiddenInstagramException("InvalidInputParams");
                 break;
@@ -157,7 +165,7 @@ class CurlTransport implements ITransport
                 throw new InvalidRequestMethodException("InvalidRequestMethod");
                 break;
             case 429:
-                throw new TooManyRequestsException();
+                throw new TooManyRequestsException("TooManyRequests");
                 break;
             default:
                 throw new InstagramException("Http code: {$http_code}");
