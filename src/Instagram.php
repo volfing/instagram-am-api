@@ -34,6 +34,9 @@ class Instagram
      */
     public function __construct()
     {
+        $username = "empty_userndjbse34";
+        $password = "empty_password";
+        $this->client = new Client($username, $password);
         $this->initSubmodules();
     }
 
@@ -93,7 +96,8 @@ class Instagram
      */
     public function setUser($username, $password)
     {
-        $this->client = new Client($username, $password);
+        $this->client->setUsername($username);
+        $this->client->setPassword($password);
         $this->initSubmodules();
     }
 

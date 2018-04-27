@@ -18,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $username = $_POST['username'];
         $password = $_POST['password'];
         $instagram->setUser($username, $password);
-
         switch ($_POST['submit']) {
             case "submitLogin":
                 $result = $instagram->login();

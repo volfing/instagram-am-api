@@ -96,17 +96,14 @@ class CookieManager
     }
 
     /**
-     * Сохраняет куки из curl
+     * Сохраняет куки из array
      *
-     * @param $cookie
+     * @param array $cookie
      */
-    public function saveCurlCookie($cookie)
+    public function saveCookieFromArray($cookie)
     {
-        foreach ($cookie as $cookie_str) {
-            $cookie_parts = explode("	", $cookie_str);
-            if (!empty($cookie_parts[6])) {
-                $this->setCookie($cookie_parts[5], $cookie_parts[6]);
-            }
+        foreach ($cookie as $key => $value) {
+            $this->setCookie($key, $value);
         }
         $this->saveCookie();
     }
