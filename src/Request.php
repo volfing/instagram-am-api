@@ -10,10 +10,7 @@ namespace InstagramAmAPI;
 
 use InstagramAmAPI\Exception\InstagramException;
 use InstagramAmAPI\Exception\ForbiddenInstagramException;
-use InstagramAmAPI\Exception\InvalidRequestMethodException;
 use InstagramAmAPI\Exception\NotFoundInstagramException;
-use InstagramAmAPI\Exception\TooManyRequestsException;
-use InstagramAmAPI\Transport\CurlTransport;
 use InstagramAmAPI\Transport\GuzzleTransport;
 use InstagramAmAPI\Transport\ITransport;
 
@@ -102,22 +99,6 @@ class Request
         $this->transport->setUrl(self::INSTAGRAM_URL);
         $this->transport->init();
         $result = $this->transport->send();
-        $http_code = $this->transport->getRequestInfo()['http_code'];
-        switch ($http_code) {
-            case 200:
-//                ok
-                break;
-            case 403:
-                throw new ForbiddenInstagramException();
-                break;
-            case 404:
-                throw new NotFoundInstagramException();
-                break;
-            default:
-                throw new InstagramException();
-                break;
-
-        }
         $rhx_gis = $this->extractRhxGis($result);
         $this->saveCookie();
         if (empty($rhx_gis)) {
