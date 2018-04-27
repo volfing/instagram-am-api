@@ -94,5 +94,15 @@ class Client
         return self::USER_AGENT;
     }
 
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
+
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
 
 }

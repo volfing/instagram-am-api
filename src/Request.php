@@ -10,9 +10,11 @@ namespace InstagramAmAPI;
 
 use InstagramAmAPI\Exception\InstagramException;
 use InstagramAmAPI\Exception\ForbiddenInstagramException;
+use InstagramAmAPI\Exception\InvalidRequestMethodException;
 use InstagramAmAPI\Exception\NotFoundInstagramException;
 use InstagramAmAPI\Exception\TooManyRequestsException;
 use InstagramAmAPI\Transport\CurlTransport;
+use InstagramAmAPI\Transport\GuzzleTransport;
 use InstagramAmAPI\Transport\ITransport;
 
 
@@ -45,7 +47,7 @@ class Request
      */
     public function __construct($client, $data = [])
     {
-        $this->transport = new CurlTransport();
+        $this->transport = new GuzzleTransport();
         $this->data = $data;
         $this->headers = false;
         $this->client = $client;
@@ -80,6 +82,7 @@ class Request
 
         $this->transport->setUrl($full_url);
         $this->transport->init();
+        $this->transport->setPost(true);
         if (!empty($this->client->getProxy())) {
             $this->transport->setProxy($this->client->getProxy());
         }
@@ -139,23 +142,7 @@ class Request
         /** Удаляем пустые заголовки */
         $this->headers = array_filter($this->headers);
 
-        $result_headers = [];
-        foreach ($this->headers as $key => $value) {
-            if (is_array($value)) {
-                $full_value = "";
-                foreach ($value as $key_inner => $value_inner) {
-                    if (!empty($value_inner)) {
-                        $full_value .= $key_inner . "=" . $value_inner . "; ";
-                    }
-                }
-                $result_headers[] = $key . ": " . $full_value;
-            } else {
-                if (!empty($value)) {
-                    $result_headers[] = $key . ": " . $value;
-                }
-            }
-        }
-        $this->transport->setHeaders($result_headers);
+        $this->transport->setHeaders($this->headers);
     }
 
     /**
@@ -204,7 +191,7 @@ class Request
     protected function saveCookie()
     {
         $cookie = $this->transport->getCookie();
-        $this->client->cookie->saveCurlCookie($cookie);
+        $this->client->cookie->saveCookieFromArray($cookie);
     }
 
     /**
@@ -299,26 +286,6 @@ class Request
         $this->preRequest();
         $this->initHeaders();
         $result = $this->transport->send();
-        $http_code = $this->transport->getRequestInfo()['http_code'];
-        switch ($http_code) {
-            case 200:
-//                ok
-                break;
-                break;
-            case 403:
-                throw new ForbiddenInstagramException("Http code: {$http_code}");
-                break;
-            case 404:
-                throw new NotFoundInstagramException("Http code: {$http_code}");
-                break;
-            case 429:
-                throw new TooManyRequestsException();
-                break;
-            default:
-                throw new InstagramException("Http code: {$http_code}");
-                break;
-
-        }
         $this->saveCookie();
         $this->postRequest();
         $result = json_decode($result, true);
