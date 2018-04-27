@@ -52,9 +52,10 @@ class ModelHelper
             $type = $media_node["__typename"];
         }
 
+        $owner = self::loadAccount($media_node['owner']);
         $data = [
             "id" => $media_node["id"],
-            "owner" => $media_node["owner"]["id"],
+            "owner" => $owner,
             "shortcode" => $media_node["shortcode"],
             "dateOfPublish" => $media_node["taken_at_timestamp"],
             "numOfComments" => $media_node["edge_media_to_comment"]["count"],
@@ -68,11 +69,12 @@ class ModelHelper
             $comments = [];
             foreach ($media_node['edge_media_to_comment']['edges'] as $comment_node) {
                 $comment_node = $comment_node['node'];
+                $owner = ModelHelper::loadAccount($comment_node['owner']);
                 $comments[] = new Comment([
                     'id' => $comment_node['id'],
                     'text' => $comment_node['text'],
                     'created_at' => $comment_node['created_at'],
-                    'owner' => $comment_node['owner']['id'],
+                    'owner' => $owner,
                 ]);
             }
             $data['comments'] = $comments;
@@ -81,11 +83,7 @@ class ModelHelper
             $likes = [];
             foreach ($media_node['edge_media_preview_like']['edges'] as $like_node) {
                 $like_node = $like_node['node'];
-                $likes = new Like([
-                    'id' => $like_node['id'],
-                    'username' => $like_node['username'],
-                    'profile_pic_url' => $like_node['profile_pic_url'],
-                ]);
+                $likes[] = self::loadAccount($like_node);
             }
             $data['likes'] = $likes;
         }
@@ -111,5 +109,31 @@ class ModelHelper
             'facebook_places_id' => $node['facebook_places_id'],
         ]);
         return $location;
+    }
+
+    /**
+     * @param array $owner
+     * @return Account
+     */
+    public static function loadAccount($owner)
+    {
+        $account_data = [];
+        $account_data['id'] = $owner['id'];
+
+        if (isset($owner['username'])) {
+            $account_data['username'] = $owner['username'];
+        }
+        if (isset($owner['profile_pic_url'])) {
+            $account_data['profile_pic_url'] = $owner['profile_pic_url'];
+        }
+        if (isset($owner['full_name'])) {
+            $account_data['full_name'] = $owner['full_name'];
+        }
+        if (isset($owner['is_private'])) {
+            $account_data['is_private'] = $owner['is_private'];
+        }
+
+        $account = new Account($account_data);
+        return $account;
     }
 }
