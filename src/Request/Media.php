@@ -10,6 +10,7 @@ namespace InstagramAmAPI\Request;
 
 
 use InstagramAmAPI\Model\Comment;
+use InstagramAmAPI\Model\ModelHelper;
 use InstagramAmAPI\Model\Photo;
 use InstagramAmAPI\Response\ResponseAccounts;
 use InstagramAmAPI\Response\ResponseMediaComments;
@@ -92,10 +93,12 @@ class Media extends Request
     /**
      * Получение публикации по ее $mediaID
      * @param $mediaID
-     * @return Media|array
+     * @return array|Media
+     * @throws \Exception
      */
     public function getById($mediaID)
     {
+        throw new \Exception("NonImplementException");
 //        TODO: Не работает
         $request = new RequestMediaInfo($this->client, [
             'id' => $mediaID
@@ -124,18 +127,7 @@ class Media extends Request
             if (isset($response['edge_media_to_caption']['edges'][0])) {
                 $message = $response['edge_media_to_caption']['edges'][0]['node']['text'];
             }
-
-            $media = new \InstagramAmAPI\Model\Media([
-                'id' => $response['id'],
-                "owner" => $response['owner']['id'],
-                "dateOfPublish" => $response['taken_at_timestamp'],
-                "numOfComments" => $response['edge_media_to_comment']['count'],
-                "numOfLikes" => $response['edge_media_preview_like']['count'],
-                "type" => $response['__typename'],
-                "message" => $message,
-//        "comments" => $comments,
-                "photos" => $photos,
-            ]);
+            $media = ModelHelper::loadMediaFromNode($response);
             return $media;
         }
         return $response;
@@ -166,9 +158,10 @@ class Media extends Request
             $response = $response['edges'];
             foreach ($response as $item) {
                 $item = $item['node'];
+                $owner = ModelHelper::loadAccount($item['owner']);
                 $comments[] = new Comment([
                     'id' => $item['id'],
-                    'owner' => $item['owner']['id'],
+                    'owner' => $owner,
                     'date' => $item['created_at'],
                     'message' => $item['text'],
                 ]);
@@ -208,12 +201,13 @@ class Media extends Request
             $response = $response['edges'];
             foreach ($response as $item) {
                 $item = $item['node'];
-                $likes_users[] = [
+                $likes_users[] = ModelHelper::loadAccount($item);
+                /*[
                     'id' => $item['id'],
                     'username' => $item['username'],
                     'full_name' => $item['full_name'],
                     'profile_pic_url' => $item['profile_pic_url'],
-                ];
+                ];*/
             }
             return new ResponseAccounts([
                 'next_max_id' => $max_id,

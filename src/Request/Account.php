@@ -33,9 +33,11 @@ class Account extends Request
      * Получение информации об instagram аккаунте по его ID
      * @param int $userID
      * @return array|Account
+     * @throws \Exception
      */
     public function getById($userID)
     {
+        throw new \Exception("NonImplementException");
 //        TODO: не работает...
         $request = new RequestUserInfoById($this->client, ['id' => $userID]);
         $response = $request->send();
@@ -148,9 +150,11 @@ class Account extends Request
      * @param string $photo_data
      * @param string $message
      * @return int $mediaID
+     * @throws \Exception
      */
     public function postMedia($photo_data, $message = "")
     {
+        throw new \Exception("NonImplementException");
         $request = new RequestPostPhoto($this->client,
             [
                 'photo_data' => $photo_data,
@@ -260,12 +264,7 @@ class Account extends Request
             $response = $response['edges'];
             foreach ($response as $item) {
                 $item = $item["node"];
-                $followers[] = new \InstagramAmAPI\Model\Account([
-                    'id' => $item['id'],
-                    'username' => $item['username'],
-                    'full_name' => $item['full_name'],
-                    'profile_pic_url' => $item['profile_pic_url'],
-                ]);
+                $followers[] = ModelHelper::loadAccount($item);
             }
             return new ResponseAccounts([
                 'next_max_id' => $next_max_id,
@@ -305,12 +304,7 @@ class Account extends Request
             $response = $response['edges'];
             foreach ($response as $item) {
                 $item = $item["node"];
-                $followings[] = new \InstagramAmAPI\Model\Account([
-                    'id' => $item['id'],
-                    'username' => $item['username'],
-                    'full_name' => $item['full_name'],
-                    'profile_pic_url' => $item['profile_pic_url'],
-                ]);
+                $followings[] = ModelHelper::loadAccount($item);
             }
             return new ResponseAccounts([
                 'next_max_id' => $next_max_id,
@@ -375,10 +369,7 @@ class Account extends Request
                     'ranked_position' => $item['ranked_position'],
                     'seen' => $item['seen'],
                     'seen_ranked_position' => $item['seen_ranked_position'],
-                    'owner' => [
-                        'id' => $item['owner']['id'],
-                        'username' => $item['owner']['username'],
-                    ]
+                    'owner' => ModelHelper::loadAccount($item['owner'])
                 ];
             }
             return $response;
@@ -389,13 +380,15 @@ class Account extends Request
     /**
      * @param $reel_ids
      * @return array
+     * @throws \Exception
      */
     public function getStoriesFeed($reel_ids)
     {
+        throw new \Exception("NonImplementException");
 //        TODO: не работает
         return null;
         $request = new RequestStoriesFeed($this->client, [
-            'reel_ids' => [ $reel_ids ]
+            'reel_ids' => [$reel_ids]
         ]);
         $response = $request->send();
         return $response;

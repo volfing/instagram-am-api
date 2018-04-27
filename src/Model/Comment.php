@@ -14,7 +14,7 @@ use LazyJsonMapper\LazyJsonMapper;
 /**
  * Class Comment
  * @property string $id
- * @property int $owner
+ * @property Account $owner
  * @property int $date
  * @property string $message
  * @property int $numOfLikes
@@ -25,7 +25,7 @@ class Comment extends LazyJsonMapper
 {
     const JSON_PROPERTY_MAP = [
         "id" => "string",
-        "owner" => "int",
+        "owner" => "Account",
 //        "media" => "Media",
         "date" => "int",
         "message" => "string",

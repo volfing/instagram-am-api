@@ -14,7 +14,7 @@ use LazyJsonMapper\LazyJsonMapper;
 /**
  * Class Media
  * @property string $id
- * @property int $owner
+ * @property Account $owner
  * @property int $dateOfPublish
  * @property int $numOfComments
  * @property int $numOfLikes
@@ -30,7 +30,7 @@ class Media extends LazyJsonMapper
 {
     const JSON_PROPERTY_MAP = [
         "id" => "string",
-        "owner" => "int",
+        "owner" => "Account",
         "dateOfPublish" => "int",
         "numOfComments" => "int",
         "numOfLikes" => "int",
