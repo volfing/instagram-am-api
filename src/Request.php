@@ -76,12 +76,14 @@ class Request
             }
 
             $params = implode("&", $params);
-        }else{
+        } else {
             $params = "";
         }
 
-        if(strpos($full_url, "{params}") !== false){
+        if (strpos($full_url, "{params}") !== false) {
             $full_url = str_replace("{params}", "?" . $params, $full_url);
+        } else {
+            $full_url .= "?" . $params;
         }
 
         $this->transport->setUrl($full_url);
