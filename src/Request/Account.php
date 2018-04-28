@@ -37,8 +37,6 @@ class Account extends Request
      */
     public function getById($userID)
     {
-        throw new \Exception("NonImplementException");
-//        TODO: не работает...
         $request = new RequestUserInfoById($this->client, ['id' => $userID]);
         $response = $request->send();
 

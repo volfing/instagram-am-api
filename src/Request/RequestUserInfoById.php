@@ -15,12 +15,10 @@ class RequestUserInfoById extends AuthorizedRequest
 {
     protected function init($url = "", $params = null)
     {
-        $this->instagram_url = self::API_URL;
-        $params = [
-            "q" => "ig_user(" . $this->data['id'] . ") {id, username, full_name, profile_pic_url, biography, external_url, is_private, is_verified, media {count}, followed_by {count}, follows {count} }"
-        ];
+        $this->instagram_url = self::I_V1_API_URL;
+        $this->instagram_url .= "users/" .  $this->data['id']->getId() . "/info/";
+
         parent::init($url);
-        $this->setPostData($params);
     }
 
 }

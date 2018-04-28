@@ -27,9 +27,10 @@ class Request
 {
     protected $instagram_url = "https://www.instagram.com";
 
-    const INSTAGRAM_URL = 'https://www.instagram.com/';
-    const API_URL = 'https://www.instagram.com/query/';
-    const GRAPHQL_API_URL = 'https://www.instagram.com/graphql/query/';
+    const INSTAGRAM_URL = 'https://www.instagram.com/{params}';
+    const API_URL = 'https://www.instagram.com/query/{params}';
+    const GRAPHQL_API_URL = 'https://www.instagram.com/graphql/query/{params}';
+    const I_V1_API_URL = 'https://i.instagram.com/api/v1/';
 
     /** @var  ITransport */
     protected $transport;
@@ -69,12 +70,18 @@ class Request
         $this->client->cookie->loadCookie();
         $full_url = $this->instagram_url . $url;
 
-        if (!is_null($params)) {
-            $full_url .= "?";
+        if (!empty($params)) {
             foreach ($params as $param_key => $param_value) {
                 $params[$param_key] = $param_key . "=" . $param_value;
             }
-            $full_url .= implode("&", $params);
+
+            $params = implode("&", $params);
+        }else{
+            $params = "";
+        }
+
+        if(strpos($full_url, "{params}") !== false){
+            $full_url = str_replace("{params}", "?" . $params, $full_url);
         }
 
         $this->transport->setUrl($full_url);
@@ -95,7 +102,8 @@ class Request
     private function initRequest()
     {
         $this->client->cookie->loadCookie();
-        $this->transport->setUrl(self::INSTAGRAM_URL);
+        $url = str_replace("{params}", "", self::INSTAGRAM_URL);
+        $this->transport->setUrl($url);
         $this->transport->init();
         $result = $this->transport->send();
         $rhx_gis = $this->extractRhxGis($result);
