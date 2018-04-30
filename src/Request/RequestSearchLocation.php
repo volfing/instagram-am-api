@@ -24,7 +24,7 @@ class RequestSearchLocation extends AuthorizedRequest
      */
     protected function init($url = "", $params = null)
     {
-        $this->instagram_url = self::INSTAGRAM_URL;
+        $this->instagram_url = str_replace("{params}", "", self::INSTAGRAM_URL);
         $url = "location_search/";
         parent::init($url, $params);
         $post_data = [
