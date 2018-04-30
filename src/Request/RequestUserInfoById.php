@@ -16,7 +16,7 @@ class RequestUserInfoById extends AuthorizedRequest
     protected function init($url = "", $params = null)
     {
         $this->instagram_url = self::I_V1_API_URL;
-        $this->instagram_url .= "users/" .  $this->data['id']->getId() . "/info/";
+        $this->instagram_url .= "users/" .  $this->data['id'] . "/info/";
 
         parent::init($url);
     }
