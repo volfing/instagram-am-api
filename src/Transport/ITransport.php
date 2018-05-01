@@ -36,4 +36,6 @@ interface ITransport
     public function send();
 
     public function getRequestInfo();
+
+    public function addAttachment($attachment);
 }

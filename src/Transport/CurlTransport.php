@@ -194,4 +194,9 @@ class CurlTransport implements ITransport
     {
         return curl_getinfo($this->curl);
     }
+
+    public function addAttachment($attachment)
+    {
+        // TODO: Implement addAttachment() method.
+    }
 }
