@@ -28,39 +28,17 @@ class RequestPostPhoto extends AuthorizedRequest
         $this->instagram_url = self::INSTAGRAM_URL;
         $url = "create/upload/photo/";
         parent::init($url, $params);
-
-        $files = [
-            'photo',
-            'photo.jpg',
-            'application/octet-stream',
-            $this->data['photo_data'],
-        ];
-        $boundary_teil = "DOgoiQ5LLJRxJQ4y";
-        $boundary = "----WebKitFormBoundary" . $boundary_teil;
-        $body = "
-{$boundary}
-Content-Disposition: form-data; name=\"upload_id\"
-
-1524012338614
-{$boundary}
-Content-Disposition: form-data; name=\"photo\"; filename=\"photo.jpg\"
-Content-Type: image/jpeg
-
-
-{$boundary}
-Content-Disposition: form-data; name=\"media_type\"
-
-1
-{$boundary}--
-        ";
-        $data = [
-            'photo' => $this->data['photo_data']
-        ];
+        $this->setPost(true);
         $this->addHeader("User-Agent", Client::MOBILE_USER_AGENT);
         $this->addHeader("Referer", "https://www.instagram.com/create/crop/");
-        $this->addHeader("Content-Type", "multipart/form-data; boundary=----WebKitFormBoundary{$boundary_teil}");
-        $this->addHeader("Content-Length", strlen($body));
-        $this->setPostData($files);
+        $this->addHeader("Content-Type", "application/octet-stream");
+
+        $filename = 'test_file.jpg';
+        file_put_contents($filename, $this->data['photo_data']);
+        $this->addAttachment([
+            'name' => 'file',
+            'contents' => fopen($filename, 'r'),
+        ]);
     }
 
     /**
