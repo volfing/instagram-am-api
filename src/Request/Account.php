@@ -154,10 +154,11 @@ class Account extends Request
     {
         $request = new RequestPostPhoto($this->client,
             [
-                'photo_data' => $photo_data,
+                'photo' => $photo_data,
                 'message' => $message,
             ]);
         $response = $request->send();
+
         return $response;
     }
 

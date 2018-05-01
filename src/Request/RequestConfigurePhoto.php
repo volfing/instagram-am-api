@@ -22,10 +22,10 @@ class RequestConfigurePhoto extends AuthorizedRequest
      */
     protected function init($url = "", $params = null)
     {
-        $url = "create/configure/";
+        $url = "/create/configure/";
         $post_data = [
             'upload_id' => $this->data['upload_id'],
-            'caption' => $this->data['caption'],
+            'caption' => $this->data['caption']
         ];
         parent::init($url, $params);
 

@@ -85,6 +85,11 @@ class GuzzleTransport implements ITransport
         $this->options['form_params'] = $post_data;
     }
 
+    public function setMultipartData($post_data)
+    {
+        $this->options['multipart'] = $post_data;
+    }
+
     public function setUrl($url)
     {
         $this->url = $url;
