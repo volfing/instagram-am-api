@@ -35,10 +35,12 @@ class CookieManager
         $dir = __DIR__ . "/../../sessions";
         if (!is_dir($dir)) {
             mkdir($dir);
+            chmod($dir, 0755);
         }
         $userdir = $dir . "/" . $username;
         if (!is_dir($userdir)) {
             mkdir($userdir);
+            chmod($userdir, 0755);
         }
         $this->cookie_file = $userdir . "/cookie.txt";
     }

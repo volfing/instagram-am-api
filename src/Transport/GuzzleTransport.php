@@ -174,4 +174,16 @@ class GuzzleTransport implements ITransport
             'http_code' => $this->response->getStatusCode()
         ];
     }
+
+    /**
+     * Добавляет вложение (обычно файл) в тело запроса
+     * @param $attachment
+     */
+    public function addAttachment($attachment)
+    {
+        $attachment = array_filter($attachment);
+        if (!empty($attachment)) {
+            $this->options['multipart'][] = $attachment;
+        }
+    }
 }
