@@ -11,6 +11,7 @@ namespace InstagramAmAPI\Request;
 
 use InstagramAmAPI\AuthorizedRequest;
 use InstagramAmAPI\Client;
+use InstagramAmAPI\Exception\UploadPhotoException;
 
 /**
  * Class RequestPostPhoto
@@ -19,26 +20,44 @@ use InstagramAmAPI\Client;
  */
 class RequestPostPhoto extends AuthorizedRequest
 {
-    /**
-     * @inheritdoc
-     */
     protected function init($url = "", $params = null)
     {
-//        TODO Нужно доделать.
-        $this->instagram_url = self::INSTAGRAM_URL;
-        $url = "create/upload/photo/";
         parent::init($url, $params);
-        $this->setPost(true);
-        $this->addHeader("User-Agent", Client::MOBILE_USER_AGENT);
-        $this->addHeader("Referer", "https://www.instagram.com/create/crop/");
-        $this->addHeader("Content-Type", "application/octet-stream");
 
-        $filename = 'test_file.jpg';
-        file_put_contents($filename, $this->data['photo_data']);
-        $this->addAttachment([
-            'name' => 'file',
-            'contents' => fopen($filename, 'r'),
-        ]);
+        $this->preparePhoto();
+    }
+
+    private function preparePhoto(){
+        $this->data["photo"] = $this->squareImage($this->data["photo"]);
+    }
+
+    private function squareImage($imageData, $thumbSize = 1000)
+    {
+        list($width, $height) = getimagesizefromstring($imageData);
+        $newImage = imagecreatefromstring($imageData);
+
+        if ($width > $height) {
+            $y = 0;
+            $x = ($width - $height) / 2;
+            $smallestSide = $height;
+        } else {
+            $x = 0;
+            $y = ($height - $width) / 2;
+            $smallestSide = $width;
+        }
+
+        $thumb = imagecreatetruecolor($thumbSize, $thumbSize);
+        imagecopyresampled($thumb, $newImage, 0, 0, $x, $y, $thumbSize, $thumbSize, $smallestSide, $smallestSide);
+
+        ob_start();
+        imagejpeg($thumb, null, 100);
+        $newImageData =  ob_get_contents();
+        ob_end_clean();
+
+        @imagedestroy($newImage);
+        @imagedestroy($thumb);
+
+        return $newImageData;
     }
 
     /**
@@ -46,14 +65,28 @@ class RequestPostPhoto extends AuthorizedRequest
      */
     public function send()
     {
-        $response = parent::send();
+        parent::send();
 
-        $params = [
-            "upload_id" => $response["upload_id"],
-            "caption" => $this->data["message"],
-        ];
-        $configureRequest = new RequestConfigurePhoto($this->client, $params);
+        $uid = number_format(round(microtime(true) * 1000), 0, '', '');
+
+        $uploadRequest = new RequestUploadPhoto($this->client, [
+            "upload_id" => $uid,
+            "photo" => $this->data["photo"]
+        ]);
+
+        $response = $uploadRequest->send();
+
+        if(empty($response["status"]) || $response["status"] != "ok"){
+            throw new UploadPhotoException("Unknown error while uploading photo to instagram server");
+        }
+
+        $configureRequest = new RequestConfigurePhoto($this->client, [
+            "upload_id" => $uid,
+            "caption" => $this->data["message"]
+        ]);
+
         $response = $configureRequest->send();
+
         return $response;
     }
 
