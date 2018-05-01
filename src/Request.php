@@ -157,6 +157,14 @@ class Request
         }
     }
 
+    protected function setMultipartData($data)
+    {
+        if (!empty($data)) {
+            $this->setPost(true);
+            $this->transport->setMultipartData($data);
+        }
+    }
+
     /**
      * Действия перед отправкой запроса
      */
