@@ -152,13 +152,13 @@ class Account extends Request
      */
     public function postMedia($photo_data, $message = "")
     {
-        throw new \Exception("NonImplementException");
         $request = new RequestPostPhoto($this->client,
             [
-                'photo_data' => $photo_data,
+                'photo' => $photo_data,
                 'message' => $message,
             ]);
         $response = $request->send();
+
         return $response;
     }
 

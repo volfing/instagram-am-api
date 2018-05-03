@@ -11,6 +11,7 @@ namespace InstagramAmAPI\Transport;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
+use InstagramAmAPI\Exception\BadResponseException;
 use InstagramAmAPI\Exception\ChallengeRequiredException;
 use InstagramAmAPI\Exception\ForbiddenInstagramException;
 use InstagramAmAPI\Exception\InstagramException;
@@ -83,6 +84,11 @@ class GuzzleTransport implements ITransport
     public function setPostData($post_data)
     {
         $this->options['form_params'] = $post_data;
+    }
+
+    public function setMultipartData($post_data)
+    {
+        $this->options['multipart'] = $post_data;
     }
 
     public function setUrl($url)
@@ -159,8 +165,10 @@ class GuzzleTransport implements ITransport
                     break;
             }
         }
-        $body = $this->response->getBody()->getContents();
-        return $body;
+        if (!empty($this->response)) {
+            return $this->response->getBody()->getContents();
+        }
+        throw new BadResponseException("BadResponse");
     }
 
     public function getRequestInfo()
@@ -168,5 +176,17 @@ class GuzzleTransport implements ITransport
         return [
             'http_code' => $this->response->getStatusCode()
         ];
+    }
+
+    /**
+     * Добавляет вложение (обычно файл) в тело запроса
+     * @param $attachment
+     */
+    public function addAttachment($attachment)
+    {
+        $attachment = array_filter($attachment);
+        if (!empty($attachment)) {
+            $this->options['multipart'][] = $attachment;
+        }
     }
 }

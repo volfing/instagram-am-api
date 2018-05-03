@@ -81,11 +81,14 @@ class Request
         }
 
         if (strpos($full_url, "{params}") !== false) {
-            $full_url = str_replace("{params}", "?" . $params, $full_url);
+            if (!empty($params)) {
+                $full_url = str_replace("{params}", "?" . $params, $full_url);
+            } else {
+                $full_url = str_replace("{params}", "", $full_url);
+            }
         } else {
             $full_url .= "?" . $params;
         }
-
         $this->transport->setUrl($full_url);
         $this->transport->init();
         if (!empty($this->client->getProxy())) {
@@ -154,6 +157,14 @@ class Request
         if (!empty($data)) {
             $this->setPost(true);
             $this->transport->setPostData($data);
+        }
+    }
+
+    protected function setMultipartData($data)
+    {
+        if (!empty($data)) {
+            $this->setPost(true);
+            $this->transport->setMultipartData($data);
         }
     }
 
@@ -256,6 +267,16 @@ class Request
             return true;
         }
         return false;
+    }
+
+    /**
+     * Добавляет файл в форму
+     *
+     * @param $attachment
+     */
+    protected function addAttachment($attachment)
+    {
+        $this->transport->addAttachment($attachment);
     }
 
     /**
