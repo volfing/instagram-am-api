@@ -11,7 +11,6 @@ namespace InstagramAmAPI\Request;
 
 use InstagramAmAPI\Model\Comment;
 use InstagramAmAPI\Model\ModelHelper;
-use InstagramAmAPI\Model\Photo;
 use InstagramAmAPI\Response\ResponseAccounts;
 use InstagramAmAPI\Response\ResponseMediaComments;
 
@@ -115,18 +114,6 @@ class Media extends Request
         $response = $request->send();
         if (is_array($response)) {
             $response = $response['graphql']['shortcode_media'];
-            $photos = [];
-            foreach ($response['display_resources'] as $display_resource) {
-                $photos[] = new Photo([
-                    'src' => $display_resource['src'],
-                    'width' => $display_resource['config_width'],
-                    'height' => $display_resource['config_height'],
-                ]);
-            }
-            $message = "";
-            if (isset($response['edge_media_to_caption']['edges'][0])) {
-                $message = $response['edge_media_to_caption']['edges'][0]['node']['text'];
-            }
             $media = ModelHelper::loadMediaFromNode($response);
             return $media;
         }
