@@ -16,7 +16,6 @@ class RequestDirectGetMessageList extends RequestPrivateApi
 {
     protected function init($url = "", $params = null)
     {
-        $this->instagram_url = "https://i.instagram.com/api/v1/";
         $url = "direct_v2/inbox/";
 
         parent::init($url, $params);

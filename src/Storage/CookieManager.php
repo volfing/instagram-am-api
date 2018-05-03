@@ -109,4 +109,12 @@ class CookieManager
         }
         $this->saveCookie();
     }
+
+    /**
+     * @return null
+     */
+    public function getCookieFile()
+    {
+        return $this->cookie_file;
+    }
 }

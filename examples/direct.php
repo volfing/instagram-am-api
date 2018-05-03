@@ -20,11 +20,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $instagram->setUser($username, $password);
         $instagram->login();
         switch ($_POST['submit']) {
+            case "login":
+                $result = $instagram->loginApi();
+                break;
             case "getListOfMessages":
                 $result = $instagram->direct->getListOfMessages();
                 break;
             case "sendText":
-                $result = $instagram->direct->sendText($_POST['user_pk'], $_POST['text']);
+                $users = [$_POST['user_pk']];
+                $result = $instagram->direct->sendText($users, $_POST['text']);
                 break;
             default:
                 break;

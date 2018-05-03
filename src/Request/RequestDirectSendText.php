@@ -24,7 +24,7 @@ class RequestDirectSendText extends RequestPrivateApi
 
         $post_data = [
             'text' => $this->data['text'],
-            'recipient_users' => $this->data['users'],
+            'recipient_users' => json_encode(array_values($this->data['users'])),
             'client_context' => Signatures::genUUID(),
             'action' => 'send_item',
             '_csrftoken' => $this->client->cookie->getCookie("csrftoken"),

@@ -28,6 +28,7 @@ class Request
     protected $instagram_url = "https://www.instagram.com";
 
     const INSTAGRAM_URL = 'https://www.instagram.com/{params}';
+    const INSTAGRAM__PRIVATE_API_URL = 'https://i.instagram.com/api/v1/';
     const API_URL = 'https://www.instagram.com/query/{params}';
     const GRAPHQL_API_URL = 'https://www.instagram.com/graphql/query/{params}';
     const I_V1_API_URL = 'https://i.instagram.com/api/v1/';

@@ -8,6 +8,8 @@
 
 namespace InstagramAmAPI\Request;
 
+use InstagramAmAPI\Client;
+
 /**
  * Class RequestPrivateApi
  * @package InstagramAmAPI\Request
@@ -16,17 +18,19 @@ class RequestPrivateApi extends \InstagramAmAPI\Request
 {
     protected function init($url = "", $params = null)
     {
+        $this->client->cookie->setCookieFile($this->client->getUsername() . "_" . sha1($this->client->getPassword()) . "_private");
 
+        $this->instagram_url = self::INSTAGRAM__PRIVATE_API_URL;
         parent::init($url, $params);
 
         $headers = [
             "Cookie" => [
-                "rur" => $this->client->cookie->getCookie("rur"),
-                "csrftoken" => $this->client->cookie->getCookie("csrftoken"),
-                "mid" => $this->client->cookie->getCookie("mid"),
-                "sessionid" => $this->client->cookie->getCookie("sessionid"),
-                "ds_user_id" => $this->client->cookie->getCookie("ds_user_id"),
-                "shbid" => $this->client->cookie->getCookie("shbid"),
+                "rur" => $this->client->cookie->getCookie('rur'),
+                "csrftoken" => $this->client->cookie->getCookie('csrftoken'),
+                "mid" => $this->client->cookie->getCookie('mid'),
+                "sessionid" => $this->client->cookie->getCookie('sessionid'),
+                "ds_user_id" => $this->client->cookie->getCookie('ds_user_id'),
+                "shbid" => $this->client->cookie->getCookie('shbid'),
                 "ds_user" => $this->client->getUsername(),
                 "igfl" => $this->client->getUsername(),
                 "shbts" => microtime(true),
@@ -35,24 +39,24 @@ class RequestPrivateApi extends \InstagramAmAPI\Request
         ];
         $this->setHeaders($headers);
 //
-//        $this->addHeader('User-Agent', Client::MOBILE_APP_USER_AGENT);
-//        $this->addHeader('Connection', 'Keep-Alive');
-//        $this->addHeader('X-FB-HTTP-Engine', Constants::X_FB_HTTP_Engine);
-//        $this->addHeader('Accept', '*/*');
-//        $this->addHeader('Accept-Encoding', Constants::ACCEPT_ENCODING);
-//        $this->addHeader('Accept-Language', Constants::ACCEPT_LANGUAGE);
-//
-//        $this->addHeader('Content-Type', Constants::CONTENT_TYPE);
-//
-//
-//        $this->addHeader('X-IG-App-ID', Constants::FACEBOOK_ANALYTICS_APPLICATION_ID);
-//        $this->addHeader('X-IG-Capabilities', Constants::X_IG_Capabilities);
-//        $this->addHeader('X-IG-Connection-Type', Constants::X_IG_Connection_Type);
-//        $this->addHeader('X-IG-Connection-Speed', mt_rand(1000, 3700) . 'kbps');
-//        // TODO: IMPLEMENT PROPER CALCULATION OF THESE HEADERS.
-//        $this->addHeader('X-IG-Bandwidth-Speed-KBPS', '-1.000');
-//        $this->addHeader('X-IG-Bandwidth-TotalBytes-B', '0');
-//        $this->addHeader('X-IG-Bandwidth-TotalTime-MS', '0');
+        $this->addHeader('User-Agent', Client::MOBILE_APP_USER_AGENT);
+        $this->addHeader('Connection', 'Keep-Alive');
+        $this->addHeader('X-FB-HTTP-Engine', Constants::X_FB_HTTP_Engine);
+        $this->addHeader('Accept', '*/*');
+        $this->addHeader('Accept-Encoding', Constants::ACCEPT_ENCODING);
+        $this->addHeader('Accept-Language', Constants::ACCEPT_LANGUAGE);
+
+        $this->addHeader('Content-Type', Constants::CONTENT_TYPE);
+
+
+        $this->addHeader('X-IG-App-ID', Constants::FACEBOOK_ANALYTICS_APPLICATION_ID);
+        $this->addHeader('X-IG-Capabilities', Constants::X_IG_Capabilities);
+        $this->addHeader('X-IG-Connection-Type', Constants::X_IG_Connection_Type);
+        $this->addHeader('X-IG-Connection-Speed', mt_rand(1000, 3700) . 'kbps');
+        // TODO: IMPLEMENT PROPER CALCULATION OF THESE HEADERS.
+        $this->addHeader('X-IG-Bandwidth-Speed-KBPS', '-1.000');
+        $this->addHeader('X-IG-Bandwidth-TotalBytes-B', '0');
+        $this->addHeader('X-IG-Bandwidth-TotalTime-MS', '0');
     }
 
 

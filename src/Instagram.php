@@ -121,4 +121,9 @@ class Instagram
         return $this->client->isLogged();
     }
 
+    public function loginApi()
+    {
+
+    }
+
 }
