@@ -18,7 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $username = $_POST['username'];
         $password = $_POST['password'];
         $instagram->setUser($username, $password);
-        $result = $instagram->direct->getListOfMessages();
+        $instagram->login();
+        switch ($_POST['submit']) {
+            case "getListOfMessages":
+                $result = $instagram->direct->getListOfMessages();
+                break;
+            case "sendText":
+                $result = $instagram->direct->sendText($_POST['user_pk'], $_POST['text']);
+                break;
+            default:
+                break;
+        }
         echo "<pre>";
         print_r($result);
 
@@ -59,20 +69,22 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         </div>
         <div class="form-item">
             <label>
-                Photo caption
-                <input type="text" name="caption" placeholder="Enter photo caption"
-                       value="<?= !empty($_POST['caption']) ? $_POST['caption'] : '' ?>">
+                User pk
+                <input type="text" name="user_pk" placeholder="Enter user_pk"
+                       value="<?= !empty($_POST['user_pk']) ? $_POST['user_pk'] : '' ?>">
             </label>
         </div>
         <div class="form-item">
             <label>
-                Photo
-                <input type="file" name="photo">
+                Direct message
+                <input type="text" name="text" placeholder="Enter message"
+                       value="<?= !empty($_POST['te']) ? $_POST['text'] : '' ?>">
             </label>
         </div>
         <div class="form-item">
             <div>
-                <input type="submit" name="submit" value="upload">
+                <input type="submit" name="submit" value="getListOfMessages">
+                <input type="submit" name="submit" value="sendText">
             </div>
         </div>
     </form>

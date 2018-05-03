@@ -8,10 +8,11 @@
 
 namespace InstagramAmAPI\Request;
 
-
-use InstagramAmAPI\AuthorizedRequest;
-
-class RequestDirectGetMessageList extends AuthorizedRequest
+/**
+ * Class RequestDirectGetMessageList
+ * @package InstagramAmAPI\Request
+ */
+class RequestDirectGetMessageList extends RequestPrivateApi
 {
     protected function init($url = "", $params = null)
     {
