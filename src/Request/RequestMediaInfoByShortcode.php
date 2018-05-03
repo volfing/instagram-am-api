@@ -19,7 +19,7 @@ class RequestMediaInfoByShortcode extends NonAuthorizedRequest
 {
     protected function init($url = "", $params = null)
     {
-
+        $this->instagram_url = str_replace("{params}", "", $this->instagram_url);
         $url = "p/" . $this->data['shortcode'] . "/";
         $params = [
             "__a" => 1,
