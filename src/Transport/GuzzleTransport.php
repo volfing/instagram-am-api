@@ -11,6 +11,7 @@ namespace InstagramAmAPI\Transport;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
+use InstagramAmAPI\Exception\BadResponseException;
 use InstagramAmAPI\Exception\ChallengeRequiredException;
 use InstagramAmAPI\Exception\ForbiddenInstagramException;
 use InstagramAmAPI\Exception\InstagramException;
@@ -164,8 +165,10 @@ class GuzzleTransport implements ITransport
                     break;
             }
         }
-        $body = $this->response->getBody()->getContents();
-        return $body;
+        if (!empty($this->response)) {
+            return $this->response->getBody()->getContents();
+        }
+        throw new BadResponseException("BadResponse");
     }
 
     public function getRequestInfo()
