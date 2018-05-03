@@ -12,6 +12,7 @@ use InstagramAmAPI\Exception\BadResponseException;
 use InstagramAmAPI\Exception\IncorrectPasswordException;
 use InstagramAmAPI\Exception\InvalidUserException;
 use InstagramAmAPI\Request\Account;
+use InstagramAmAPI\Request\Direct;
 use InstagramAmAPI\Request\Explore;
 use InstagramAmAPI\Request\Media;
 use InstagramAmAPI\Request\RequestLogin;
@@ -21,6 +22,7 @@ use InstagramAmAPI\Request\RequestLogin;
  * @property Client $client
  * @property Account $account
  * @property Media $media
+ * @property Direct $direct
  * @property Explore $explore
  * @package InstagramAmAPI
  */
@@ -88,6 +90,7 @@ class Instagram
         $this->account = new Account($this->client);
         $this->media = new Media($this->client);
         $this->explore = new Explore($this->client);
+        $this->direct = new Direct($this->client);
     }
 
     /**
