@@ -9,13 +9,13 @@
 namespace InstagramAmAPI\Request;
 
 
-use InstagramAmAPI\AuthorizedRequest;
+use InstagramAmAPI\NonAuthorizedRequest;
 
 /**
  * Class RequestUserInfo
  * @package InstagramAmAPI\Request
  */
-class RequestUserInfo extends AuthorizedRequest
+class RequestUserInfo extends NonAuthorizedRequest
 {
 
     /**
