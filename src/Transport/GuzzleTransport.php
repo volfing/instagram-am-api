@@ -146,6 +146,9 @@ class GuzzleTransport implements ITransport
                     throw new InstagramException("Http code: {$http_code}");
                     break;
                 case 403:
+                    if ($e->getResponse()->getBody()->getContents() == "Please wait a few minutes before you try again.") {
+                        throw new TooManyRequestsException("TooManyRequests");
+                    }
                     throw new ForbiddenInstagramException("InvalidInputParams");
                     break;
                 case 404:
