@@ -28,15 +28,7 @@ class RequestUserInfo extends NonAuthorizedRequest
         }
         $this->instagram_url = "https://www.instagram.com";
 
-        $variables = [
-            "__a" => 1
-        ];
         $url = "/" . $this->data['username'] . "/";
-        parent::init($url, $variables);
-        $this->addHeader("User-Agent", "");
-        $this->addHeader("Referer", "https://www.instagram.com/" . $this->data['username'] . "/");
-        $this->addQuerySignature($variables, $this->instagram_url . $url);
+        parent::init($url);
     }
-
-
 }

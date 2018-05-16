@@ -37,6 +37,7 @@ class Request
     protected $data;
     private $headers;
     protected $client;
+    protected $withoutDecode = false;
 
     /**
      * Request constructor.
@@ -289,6 +290,10 @@ class Request
         return false;
     }
 
+    public function withoutDecode($withoutDecode = true){
+        $this->withoutDecode = $withoutDecode;
+    }
+
     /**
      * Добавляет файл в форму
      *
@@ -319,7 +324,11 @@ class Request
         $result = $this->transport->send();
         $this->saveCookie();
         $this->postRequest();
-        $result = json_decode($result, true);
+
+        if(!$this->withoutDecode){
+            $result = json_decode($result, true);
+        }
+
         return $result;
 
     }
