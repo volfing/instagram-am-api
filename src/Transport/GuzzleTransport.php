@@ -143,7 +143,7 @@ class GuzzleTransport implements ITransport
                     if ($response['message'] == 'checkpoint_required') {
                         throw new ChallengeRequiredException("ChallengeRequired");
                     }
-                    throw new InstagramException("Http code: {$http_code}");
+                    throw new InstagramException($e->getMessage());
                     break;
                 case 403:
                     if ($e->getResponse()->getBody()->getContents() == "Please wait a few minutes before you try again.") {
@@ -164,7 +164,7 @@ class GuzzleTransport implements ITransport
                     throw new TooManyRequestsException("TooManyRequests");
                     break;
                 default:
-                    throw new InstagramException("Http code: {$http_code}");
+                    throw new InstagramException($e->getMessage());
                     break;
             }
         }

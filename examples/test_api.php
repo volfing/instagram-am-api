@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 $result = $instagram->account->loadMediasById($_POST['search_id']);
                 break;
             case "loadMediasByUsername":
-                $result = $instagram->account->loadMediasByUsername($_POST['search_id']);
+                $result = $instagram->account->loadMediasByUsername($_POST['search_id'])->asArray();
                 break;
             case "getMediaInfoByID":
                 $result = $instagram->media->getById($_POST['search_id']);

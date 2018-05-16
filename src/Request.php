@@ -112,14 +112,19 @@ class Request
         $this->transport->init();
         $result = $this->transport->send();
         $rhx_gis = $this->extractRhxGis($result);
+        $x_instagram_ajax = $this->extractXInstagramAjax($result);
         $this->saveCookie();
         if (empty($rhx_gis)) {
             throw new InstagramException("Unable to get rhx_gis from init request.");
+        }
+        if (empty($x_instagram_ajax)) {
+            throw new InstagramException("Unable to get x_instagram_ajax from init request.");
         }
         if (empty($this->client->cookie->getCookie('csrftoken'))) {
             throw new InstagramException("Unable to get csrftoken from init request.");
         }
         $this->client->cookie->setCookie("rhx_gis", $rhx_gis);
+        $this->client->cookie->setCookie("x_instagram_ajax", $x_instagram_ajax);
         $this->client->cookie->saveCookie();
         $this->transport->close();
     }
@@ -223,6 +228,21 @@ class Request
     protected function extractRhxGis($html_body)
     {
         $success_search = preg_match_all("/\"rhx_gis\"\:\"([a-z0-9]+)\"/", $html_body, $matched);
+        if ($success_search) {
+            return $matched[1][0];
+        }
+        return false;
+    }
+
+    /**
+     * Ищет x-instagram-ajax на странице
+     *
+     * @param $html_body
+     * @return bool
+     */
+    protected function extractXInstagramAjax($html_body)
+    {
+        $success_search = preg_match_all("/\"rollout_hash\"\:\"([a-z0-9]+)\"/", $html_body, $matched);
         if ($success_search) {
             return $matched[1][0];
         }
