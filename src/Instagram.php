@@ -9,12 +9,20 @@
 namespace InstagramAmAPI;
 
 use InstagramAmAPI\Exception\BadResponseException;
+use InstagramAmAPI\Exception\CheckpointCodeAlreadySent;
+use InstagramAmAPI\Exception\CheckpointCodeExpired;
+use InstagramAmAPI\Exception\CheckpointIncorrectCode;
 use InstagramAmAPI\Exception\IncorrectPasswordException;
+use InstagramAmAPI\Exception\InstagramException;
 use InstagramAmAPI\Exception\InvalidUserException;
 use InstagramAmAPI\Request\Account;
 use InstagramAmAPI\Request\Explore;
 use InstagramAmAPI\Request\Media;
+use InstagramAmAPI\Request\RequestCheckpointCode;
+use InstagramAmAPI\Request\RequestCheckpointMethods;
+use InstagramAmAPI\Request\RequestCheckpointReplay;
 use InstagramAmAPI\Request\RequestLogin;
+use InstagramAmAPI\Request\RequestVerifyCheckpointByCode;
 
 /**
  * Class Instagram
@@ -40,6 +48,89 @@ class Instagram
         $this->initSubmodules();
     }
 
+    public function getCheckpointMethods($url){
+        if(strpos($url, "instagram.com") !== false){
+            return null;
+        }
+
+        $result = null;
+
+        try{
+            $request = new RequestCheckpointMethods($this->client, [
+                "checkpoint_url" => $url
+            ]);
+
+            $result = $request->send();
+        }catch (InstagramException $e){
+            $result = json_decode($e->body, true);
+        }
+
+        if(!empty($result["challenge"]["navigation"]["replay"]) && $result["challenge"]["challengeType"] != "SelectVerificationMethodForm"){
+            $exception = new CheckpointCodeAlreadySent("Checkpoint code already sent");
+            $exception->resendLink = $result["challenge"]["navigation"]["replay"];
+
+            throw $exception;
+        }
+
+        if(!empty($result["challenge"]["extraData"]["content"][3]["fields"][0]["values"])){
+            $result = $result["challenge"]["extraData"]["content"][3]["fields"][0]["values"];
+        }else{
+            $result = null;
+        }
+
+        return $result;
+    }
+
+    public function sendCheckpointCode($choice, $url){
+        $request = new RequestCheckpointCode($this->client, [
+            "checkpoint_url" => $url,
+            "choice" => $choice
+        ]);
+
+        $request->withoutDecode(true);
+
+        $result = $request->send();
+
+        return $result;
+    }
+
+    public function verifyCheckpointByCode($url, $code){
+        $request = new RequestVerifyCheckpointByCode($this->client, [
+            "checkpoint_url" => $url,
+            "code" => $code
+        ]);
+
+        try{
+            $response = $request->send();
+        }catch (InstagramException $exception){
+            $response = json_decode($exception->body, true);
+
+            if(!empty($response["challenge"]["errors"][0]) && strpos($response["challenge"]["errors"][0], "expired") !== false){
+                $replay_link = $response["challenge"]["navigation"]["replay"];
+
+                $this->checkpointReplayCode($replay_link);
+
+                throw new CheckpointCodeExpired("Code has expired. New code was sent.");
+            }
+
+            if(!empty($response["challenge"]["errors"][0]) && strpos($response["challenge"]["errors"][0], "check the code") !== false){
+                throw new CheckpointIncorrectCode("Please check the code we sent you and try again");
+            }
+
+            throw $exception;
+        }
+
+
+        return $response;
+    }
+
+    public function checkpointReplayCode($replay_url){
+        $replay = new RequestCheckpointReplay($this->client, [
+            "checkpoint_url" => $replay_url
+        ]);
+
+        return $replay->send();
+    }
 
     /**
      * @param bool $force

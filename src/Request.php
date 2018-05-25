@@ -31,6 +31,7 @@ class Request
     const API_URL = 'https://www.instagram.com/query/{params}';
     const GRAPHQL_API_URL = 'https://www.instagram.com/graphql/query/{params}';
     const I_V1_API_URL = 'https://i.instagram.com/api/v1/';
+    const INSTAGRAM_CHECKPOINT_URL = 'https://www.instagram.com{checkpoint}';
 
     /** @var  ITransport */
     protected $transport;

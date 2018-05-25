@@ -146,7 +146,10 @@ class GuzzleTransport implements ITransport
 
                         throw $exception;
                     }
-                    throw new InstagramException($e->getMessage());
+                    $exception = new InstagramException($e->getMessage());
+                    $exception->body = $e->getResponse()->getBody();
+
+                    throw $exception;
                     break;
                 case 403:
                     if ($e->getResponse()->getBody()->getContents() == "Please wait a few minutes before you try again.") {
