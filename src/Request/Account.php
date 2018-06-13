@@ -9,7 +9,10 @@
 namespace InstagramAmAPI\Request;
 
 use InstagramAmAPI\Exception\BadResponseException;
+use InstagramAmAPI\Exception\ForbiddenInstagramException;
 use InstagramAmAPI\Exception\InstagramException;
+use InstagramAmAPI\Model\AccountEdit;
+use InstagramAmAPI\Model\AccountInfo;
 use InstagramAmAPI\Model\ModelHelper;
 use InstagramAmAPI\Response\ResponseAccounts;
 use InstagramAmAPI\Response\ResponseMediaFeed;
@@ -431,5 +434,68 @@ class Account extends Request
         $user = $this->getByUsername($this->client->getUsername());
         $user_id = $user->id;
         return $this->followings($user_id, $max_id);
+    }
+
+    /**
+     * Запрос на получение данных о профиле аккаунта
+     * Дата создания аккаунта, настройки приватности, изменение пароля и тд.
+     * @return AccountInfo
+     */
+    public function getSelfInfoPrivacy()
+    {
+        $request = new RequestAccountInfo($this->client);
+        $response = $request->send();
+        return $response;
+        $data = [
+          'is_blocked' => $response['is_blocked'],
+          'date_joined' => !empty($response['date_joined']) && !empty($response['date_joined']['data']) ? $response['date_joined']['data']['timestamp'] : null,
+          'date_of_birth' => !empty($response['date_of_birth']) && !empty($response['date_of_birth']['data']) ? $response['date_of_birth']['data']['timestamp'] : null,
+        ];
+        return new AccountInfo($data);
+    }
+
+    /**
+     * Отдает историю логинов
+     *
+     * @param null|string $cursor Указатель на начало страницы
+     * @return array
+     */
+    public function getLogins($cursor = null)
+    {
+        $request = new RequestAccountLogins($this->client, ['cursor' => $cursor]);
+        $response = $request->send();
+        return $response;
+    }
+
+    /**
+     * Запрос на страницу редактирования данных аккаунта
+     * Получает данные:
+     *  {
+     *      "form_data":
+     *      {
+     *          "first_name":"",
+     *          "last_name":"",
+     *          "email":"",
+     *          "username":"",
+     *          "phone_number":"",
+     *          "gender":1,
+     *          "birthday":null,
+     *          "biography":"",
+     *          "external_url":"",
+     *          "chaining_enabled":false,
+     *          "private_account":false,
+     *          "presence_disabled":false,
+     *          "business_account":false,
+     *          "usertag_review_enabled":false
+     *      }
+     *  }
+     *
+     * @return array
+     */
+    public function edit()
+    {
+        $request = new RequestAccountEdit($this->client);
+        $response = $request->send();
+        return new AccountEdit($response['form_data']);
     }
 }
