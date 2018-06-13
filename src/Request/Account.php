@@ -445,7 +445,6 @@ class Account extends Request
     {
         $request = new RequestAccountInfo($this->client);
         $response = $request->send();
-        return $response;
         $data = [
           'is_blocked' => $response['is_blocked'],
           'date_joined' => !empty($response['date_joined']) && !empty($response['date_joined']['data']) ? $response['date_joined']['data']['timestamp'] : null,
@@ -490,7 +489,7 @@ class Account extends Request
      *      }
      *  }
      *
-     * @return array
+     * @return AccountEdit
      */
     public function edit()
     {
