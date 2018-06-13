@@ -25,7 +25,7 @@ use LazyJsonMapper\LazyJsonMapper;
  * @property string $external_url Внешняя ссылка
  * @property bool $private_account Приватный аккаунт
  * @property bool $business_account Бизнес аккаунт
- * @property bool $chaining_enabled
+ * @property bool $chaining_enabled Предлагать похожие аккаунты
  * @property bool $presence_disabled Разрешен ли просмотр статуса онлайн
  * @property bool $usertag_review_enabled Разрешен ли просмотр юзертегов
  *
