@@ -94,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 break;
             case "getSelfInfo":
                 $result = $instagram->account->getSelfInfo();
+                break;
             case "getSelfInfoPrivacy":
                 try {
                     $result = $instagram->account->getSelfInfoPrivacy();
@@ -111,7 +112,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     $instagram->login(true);
                     $result = $instagram->account->edit();
                 }
-                break;
                 break;
             default:
                 break;
