@@ -9,7 +9,9 @@
 namespace InstagramAmAPI\Request;
 
 use InstagramAmAPI\Exception\BadResponseException;
+use InstagramAmAPI\Exception\ForbiddenInstagramException;
 use InstagramAmAPI\Exception\InstagramException;
+use InstagramAmAPI\Model\AccountInfo;
 use InstagramAmAPI\Model\ModelHelper;
 use InstagramAmAPI\Response\ResponseAccounts;
 use InstagramAmAPI\Response\ResponseMediaFeed;
@@ -55,6 +57,7 @@ class Account extends Request
             "username" => $username
         ]);
         $response = $request->send();
+        var_dump($response);
         if (is_array($response)) {
             $medias = [];
             $user_info = $response["graphql"]["user"];
@@ -415,5 +418,22 @@ class Account extends Request
         $user = $this->getByUsername($this->client->getUsername());
         $user_id = $user->id;
         return $this->followings($user_id, $max_id);
+    }
+
+    /**
+     * Запрос на получение данных о профиле аккаунта
+     * Дата создания аккаунта, настройки приватности, изменение пароля и тд.
+     * @return array
+     */
+    public function getSelfInfoPrivacy()
+    {
+        $request = new RequestAccountInfo($this->client);
+        $response = $request->send();
+        $data = [
+          'is_blocked' => $response['is_blocked'],
+          'date_joined' => !empty($response['date_joined']) && !empty($response['date_joined']['data']) ? $response['date_joined']['data']['timestamp'] : null,
+          'date_of_birth' => !empty($response['date_of_birth']) && !empty($response['date_of_birth']['data']) ? $response['date_of_birth']['data']['timestamp'] : null,
+        ];
+        return new AccountInfo($data);
     }
 }

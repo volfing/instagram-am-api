@@ -41,6 +41,7 @@ class Account extends LazyJsonMapper
         "full_name" => "string",
         "biography" => "string",
         "profile_pic_url" => "string",
+        "connected_fb_page" => "bool",
         "medias" => "Media[]",
 //        "followers" => "Account[]",
 //        "followings" => "Account[]",

@@ -9,6 +9,7 @@
 
 include __DIR__ . "/../autoload.php";
 
+use InstagramAmAPI\Exception\ForbiddenInstagramException;
 use InstagramAmAPI\Instagram;
 
 $auth_message = "";
@@ -93,6 +94,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 break;
             case "getSelfInfo":
                 $result = $instagram->account->getSelfInfo();
+                break;
+            case "getSelfInfoPrivacy":
+                try {
+                    $result = $instagram->account->getSelfInfoPrivacy();
+                } catch (ForbiddenInstagramException $e) {
+                    /** Повторный логин и отправка запроса */
+                    $instagram->login(true);
+                    $result = $instagram->account->getSelfInfoPrivacy();
+                }
                 break;
             default:
                 break;
@@ -181,6 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <input type="submit" name="submit" value="getReels">
                 <input type="submit" name="submit" value="getStories">
                 <input type="submit" name="submit" value="getSelfInfo">
+                <input type="submit" name="submit" value="getSelfInfoPrivacy">
             </div>
         </div>
     </form>
