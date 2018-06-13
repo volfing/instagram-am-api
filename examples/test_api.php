@@ -94,7 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 break;
             case "getSelfInfo":
                 $result = $instagram->account->getSelfInfo();
-                break;
             case "getSelfInfoPrivacy":
                 try {
                     $result = $instagram->account->getSelfInfoPrivacy();
@@ -103,6 +102,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     $instagram->login(true);
                     $result = $instagram->account->getSelfInfoPrivacy();
                 }
+                break;
+            case "accountEdit":
+                try {
+                    $result = $instagram->account->edit();
+                } catch (ForbiddenInstagramException $e) {
+                    /** Повторный логин и отправка запроса */
+                    $instagram->login(true);
+                    $result = $instagram->account->edit();
+                }
+                break;
                 break;
             default:
                 break;
@@ -192,6 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <input type="submit" name="submit" value="getStories">
                 <input type="submit" name="submit" value="getSelfInfo">
                 <input type="submit" name="submit" value="getSelfInfoPrivacy">
+                <input type="submit" name="submit" value="accountEdit">
             </div>
         </div>
     </form>
