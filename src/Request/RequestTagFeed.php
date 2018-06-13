@@ -9,13 +9,13 @@
 namespace InstagramAmAPI\Request;
 
 
-use InstagramAmAPI\NonAuthorizedRequest;
+use InstagramAmAPI\AuthorizedRequest;
 
 /**
  * Class RequestTagFeed
  * @package InstagramAmAPI\Request
  */
-class RequestTagFeed extends NonAuthorizedRequest
+class RequestTagFeed extends AuthorizedRequest
 {
     /**
      * @inheritdoc
