@@ -23,7 +23,7 @@ class AccountInfo extends LazyJsonMapper
 {
     const JSON_PROPERTY_MAP = [
         'is_blocked' => 'bool',
-        'date_joined' => 'bool',
+        'date_joined' => 'int',
         'date_of_birth' => 'bool',
     ];
 }
