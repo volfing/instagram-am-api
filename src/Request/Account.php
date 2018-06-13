@@ -93,6 +93,7 @@ class Account extends Request
                 "numOfFollowers" => $user_info['edge_followed_by']['count'],
                 "numOfFollowings" => $user_info['edge_follow']['count'],
                 "media_count" => $user_info['edge_owner_to_timeline_media']['count'],
+                "connected_fb_page" => $user_info['connected_fb_page'],
 
             ]);
         }
@@ -490,7 +491,7 @@ class Account extends Request
      *      }
      *  }
      *
-     * @return array
+     * @return AccountEdit
      */
     public function edit()
     {

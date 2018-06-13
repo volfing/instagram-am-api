@@ -56,6 +56,7 @@ class ModelHelper
         $data = [
             "id" => $media_node["id"],
             "owner" => $owner,
+            "url" => $media_node["display_url"],
             "shortcode" => $media_node["shortcode"],
             "dateOfPublish" => $media_node["taken_at_timestamp"],
             "numOfComments" => $media_node["edge_media_to_comment"]["count"],
