@@ -44,7 +44,7 @@ class AuthorizedRequest extends Request
             'Authority' => 'www.instagram.com',
             'Origin' => 'https://www.instagram.com',
             "x-csrftoken" => $this->client->cookie->getCookie("csrftoken"),
-            "x-instagram-ajax" => 1,
+            "x-instagram-ajax" => $this->client->cookie->getCookie("x_instagram_ajax"),
             "x-requested-with" => "XMLHttpRequest",
             "Content-Type" => "application/x-www-form-urlencoded",
             "User-Agent" => $this->client->getUserAgent()

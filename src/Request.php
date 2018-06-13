@@ -31,12 +31,14 @@ class Request
     const API_URL = 'https://www.instagram.com/query/{params}';
     const GRAPHQL_API_URL = 'https://www.instagram.com/graphql/query/{params}';
     const I_V1_API_URL = 'https://i.instagram.com/api/v1/';
+    const INSTAGRAM_CHECKPOINT_URL = 'https://www.instagram.com{checkpoint}';
 
     /** @var  ITransport */
     protected $transport;
     protected $data;
     private $headers;
     protected $client;
+    protected $withoutDecode = false;
 
     /**
      * Request constructor.
@@ -112,14 +114,19 @@ class Request
         $this->transport->init();
         $result = $this->transport->send();
         $rhx_gis = $this->extractRhxGis($result);
+        $x_instagram_ajax = $this->extractXInstagramAjax($result);
         $this->saveCookie();
         if (empty($rhx_gis)) {
             throw new InstagramException("Unable to get rhx_gis from init request.");
+        }
+        if (empty($x_instagram_ajax)) {
+            throw new InstagramException("Unable to get x_instagram_ajax from init request.");
         }
         if (empty($this->client->cookie->getCookie('csrftoken'))) {
             throw new InstagramException("Unable to get csrftoken from init request.");
         }
         $this->client->cookie->setCookie("rhx_gis", $rhx_gis);
+        $this->client->cookie->setCookie("x_instagram_ajax", $x_instagram_ajax);
         $this->client->cookie->saveCookie();
         $this->transport->close();
     }
@@ -230,6 +237,21 @@ class Request
     }
 
     /**
+     * Ищет x-instagram-ajax на странице
+     *
+     * @param $html_body
+     * @return bool
+     */
+    protected function extractXInstagramAjax($html_body)
+    {
+        $success_search = preg_match_all("/\"rollout_hash\"\:\"([a-z0-9]+)\"/", $html_body, $matched);
+        if ($success_search) {
+            return $matched[1][0];
+        }
+        return false;
+    }
+
+    /**
      * Подписывает запрос
      *
      * @param array $query
@@ -269,6 +291,10 @@ class Request
         return false;
     }
 
+    public function withoutDecode($withoutDecode = true){
+        $this->withoutDecode = $withoutDecode;
+    }
+
     /**
      * Добавляет файл в форму
      *
@@ -299,7 +325,11 @@ class Request
         $result = $this->transport->send();
         $this->saveCookie();
         $this->postRequest();
-        $result = json_decode($result, true);
+
+        if(!$this->withoutDecode){
+            $result = json_decode($result, true);
+        }
+
         return $result;
 
     }

@@ -57,8 +57,23 @@ class Account extends Request
         $request = new RequestUserInfo($this->client, [
             "username" => $username
         ]);
+        $request->withoutDecode();
         $response = $request->send();
-        var_dump($response);
+
+        if(!empty($response)){
+            preg_match("/window\._sharedData = (.*);/", $response, $matches);
+
+            if(!empty($matches[1])){
+                $response = json_decode($matches[1], true);
+
+                if(!empty($response["entry_data"]["ProfilePage"][0])){
+                    $response = $response["entry_data"]["ProfilePage"][0];
+                }else{
+                    $response = null;
+                }
+            }
+        }
+
         if (is_array($response)) {
             $medias = [];
             $user_info = $response["graphql"]["user"];

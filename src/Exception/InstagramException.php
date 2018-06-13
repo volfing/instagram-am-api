@@ -14,5 +14,5 @@ namespace InstagramAmAPI\Exception;
  */
 class InstagramException extends \Exception
 {
-
+    public $body = null;
 }

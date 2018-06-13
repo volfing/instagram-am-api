@@ -28,14 +28,11 @@ class RequestLogin extends BaseRequest
             "Cookie" => [
                 "rur" => $this->client->cookie->getCookie("rur"),
                 "csrftoken" => $this->client->cookie->getCookie("csrftoken"),
-                "mid" => $this->client->cookie->getCookie("mid"),
-                "ig_vw" => 1915,
-                "ig_pr" => 1,
-                "ig_vh" => 937,
+                "mid" => $this->client->cookie->getCookie("mid")
             ],
             "Referer" => "https://www.instagram.com/",
             "x-csrftoken" => $this->client->cookie->getCookie("csrftoken"),
-            "x-instagram-ajax" => 1,
+            "x-instagram-ajax" => $this->client->cookie->getCookie("x_instagram_ajax"),
             "x-requested-with" => "XMLHttpRequest",
             "Content-Type" => "application/x-www-form-urlencoded",
         ];

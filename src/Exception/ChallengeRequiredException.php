@@ -14,5 +14,5 @@ namespace InstagramAmAPI\Exception;
  */
 class ChallengeRequiredException extends InstagramException
 {
-
+    public $challengeInfo = null;
 }

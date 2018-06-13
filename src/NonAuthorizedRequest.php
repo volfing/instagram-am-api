@@ -25,7 +25,7 @@ class NonAuthorizedRequest extends Request
             ],
             "Referer" => "https://www.instagram.com/",
             "x-csrftoken" => $this->client->cookie->getCookie("csrftoken"),
-            "x-instagram-ajax" => 1,
+            "x-instagram-ajax" => $this->client->cookie->getCookie("x_instagram_ajax"),
             "x-requested-with" => "XMLHttpRequest",
             "Content-Type" => "application/x-www-form-urlencoded",
         ];
