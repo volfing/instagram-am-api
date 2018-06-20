@@ -9,13 +9,13 @@
 namespace InstagramAmAPI\Request;
 
 
-use InstagramAmAPI\AuthorizedRequest;
+use InstagramAmAPI\NonAuthorizedRequest;
 
 /**
  * Class RequestUserFeed
  * @package InstagramAmAPI\Request
  */
-class RequestUserFeed extends AuthorizedRequest
+class RequestUserFeed extends NonAuthorizedRequest
 {
     /**
      * @inheritdoc
@@ -35,7 +35,7 @@ class RequestUserFeed extends AuthorizedRequest
         $variables = array_filter($variables);
 
         $params = [
-            "query_hash" => QueryProperty::QUERY_HASH_USER,
+            "query_hash" => QueryProperty::QUERY_HASH_USER_MEDIA_FEED,
             "variables" => json_encode($variables)
         ];
 

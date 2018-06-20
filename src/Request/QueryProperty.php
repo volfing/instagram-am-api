@@ -15,6 +15,7 @@ namespace InstagramAmAPI\Request;
 class QueryProperty
 {
     const QUERY_HASH_USER = "42323d64886122307be10013ad2dcc44";
+    const QUERY_HASH_USER_MEDIA_FEED = "6305d415e36c0a5f0abb6daba312f2dd";
     const QUERY_HASH_MEDIA_COMMENTS = "33ba35852cb50da46f5b5e889df7d159";
     const QUERY_HASH_USER_FOLLOWING = "58712303d941c6855d4e888c5f0cd22f";
     const QUERY_HASH_USER_FOLLOWERS = "37479f2b8209594dde7facb0d904896a";

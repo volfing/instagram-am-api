@@ -9,13 +9,13 @@
 namespace InstagramAmAPI\Request;
 
 
-use InstagramAmAPI\AuthorizedRequest;
+use InstagramAmAPI\NonAuthorizedRequest;
 
 /**
  * Class RequestTagFeed
  * @package InstagramAmAPI\Request
  */
-class RequestTagFeed extends AuthorizedRequest
+class RequestTagFeed extends NonAuthorizedRequest
 {
     /**
      * @inheritdoc
@@ -31,6 +31,7 @@ class RequestTagFeed extends AuthorizedRequest
             'after' => $this->data['after']
         ];
         $variables = array_filter($variables);
+        var_dump($variables);
         $params = [
             'query_hash' => QueryProperty::QUERY_HASH_TAG_FEED,
             'variables' => json_encode($variables)
