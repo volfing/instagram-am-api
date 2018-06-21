@@ -152,7 +152,12 @@ class GuzzleTransport implements ITransport
                     throw $exception;
                     break;
                 case 403:
-                    if ($e->getResponse()->getBody()->getContents() == "Please wait a few minutes before you try again.") {
+                    $contents = $e->getResponse()->getBody()->getContents();
+                    if ($contents == "Please wait a few minutes before you try again.") {
+                        throw new TooManyRequestsException("TooManyRequests");
+                    }
+                    $response_array = json_decode($contents, true);
+                    if (!empty($response_array) && !empty($response_array['message']) && ($response_array['message'] == "Please wait a few minutes before you try again.")) {
                         throw new TooManyRequestsException("TooManyRequests");
                     }
                     throw new ForbiddenInstagramException("InvalidInputParams");

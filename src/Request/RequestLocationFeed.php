@@ -16,7 +16,7 @@ use InstagramAmAPI\NonAuthorizedRequest;
  * Class RequestLocationFeed
  * @package InstagramAmAPI\Request
  */
-class RequestLocationFeed extends AuthorizedRequest
+class RequestLocationFeed extends NonAuthorizedRequest
 {
     /**
      * @inheritdoc
