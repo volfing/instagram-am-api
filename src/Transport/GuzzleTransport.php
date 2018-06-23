@@ -163,6 +163,10 @@ class GuzzleTransport implements ITransport
                     throw new ForbiddenInstagramException("InvalidInputParams");
                     break;
                 case 404:
+                    $contents = $e->getResponse()->getBody()->getContents();
+                    if ($contents == 'This action was blocked. Please try again later.') {
+                        throw new TooManyRequestsException("TooManyRequests");
+                    }
                     throw new NotFoundInstagramException("NotFound");
                     break;
                 case 405:
