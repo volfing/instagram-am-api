@@ -39,10 +39,12 @@ class Explore extends Request
             $count = $response['count'];
             $next_id = $response['page_info']['end_cursor'];
             $medias = [];
-            foreach ($response['edges'] as $node) {
-                $node = $node['node'];
-                $media = ModelHelper::loadMediaFromNode($node);
-                $medias[] = $media;
+            if (!empty($response['edges'])) {
+                foreach ($response['edges'] as $node) {
+                    $node = $node['node'];
+                    $media = ModelHelper::loadMediaFromNode($node);
+                    $medias[] = $media;
+                }
             }
             return new ResponseMediaFeed([
                 'next_max_id' => $next_id,
@@ -72,10 +74,12 @@ class Explore extends Request
             $count = $response['count'];
             $next_id = $response['page_info']['end_cursor'];
             $medias = [];
-            foreach ($response['edges'] as $node) {
-                $node = $node['node'];
-                $media = ModelHelper::loadMediaFromNode($node);
-                $medias[] = $media;
+            if (!empty($response['edges'])) {
+                foreach ($response['edges'] as $node) {
+                    $node = $node['node'];
+                    $media = ModelHelper::loadMediaFromNode($node);
+                    $medias[] = $media;
+                }
             }
             return new ResponseMediaFeed([
                 'next_max_id' => $next_id,
@@ -155,30 +159,36 @@ class Explore extends Request
             $response_places = [];
             $response_hashtags = [];
 
-            foreach ($response['users'] as $user) {
-                $user = $user['user'];
-                $response_users[] = new \InstagramAmAPI\Model\Account([
-                    "id" => $user['pk'],
-                    "is_private" => $user['is_private'],
-                    "numOfFollowers" => $user['follower_count'],
-                    "username" => $user['username'],
-                    "full_name" => $user['full_name'],
-                    "profile_pic_url" => $user['profile_pic_url'],
-                ]);
+            if (!empty($response['users'])) {
+                foreach ($response['users'] as $user) {
+                    $user = $user['user'];
+                    $response_users[] = new \InstagramAmAPI\Model\Account([
+                        "id" => $user['pk'],
+                        "is_private" => $user['is_private'],
+                        "numOfFollowers" => $user['follower_count'],
+                        "username" => $user['username'],
+                        "full_name" => $user['full_name'],
+                        "profile_pic_url" => $user['profile_pic_url'],
+                    ]);
+                }
             }
 
-            foreach ($response['places'] as $place) {
-                $place = $place['place']['location'];
-                $response_places[] = ModelHelper::loadLocation($place);
+            if (!empty($response['places'])) {
+                foreach ($response['places'] as $place) {
+                    $place = $place['place']['location'];
+                    $response_places[] = ModelHelper::loadLocation($place);
+                }
             }
 
-            foreach ($response['hashtags'] as $hashtag) {
-                $hashtag = $hashtag['hashtag'];
-                $response_hashtags[] = [
-                    'id' => $hashtag['id'],
-                    'name' => $hashtag['name'],
-                    'media_count' => $hashtag['media_count'],
-                ];
+            if (!empty($response['hashtags'])) {
+                foreach ($response['hashtags'] as $hashtag) {
+                    $hashtag = $hashtag['hashtag'];
+                    $response_hashtags[] = [
+                        'id' => $hashtag['id'],
+                        'name' => $hashtag['name'],
+                        'media_count' => $hashtag['media_count'],
+                    ];
+                }
             }
 
             return [

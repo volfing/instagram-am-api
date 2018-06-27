@@ -134,6 +134,7 @@ class GuzzleTransport implements ITransport
 
         } catch (RequestException $e) {
             $http_code = $e->getCode();
+            $exception_message = $e->getResponse()->getBody()->getContents();
             switch ($e->getCode()) {
                 case 200:
 //                ok
@@ -141,7 +142,7 @@ class GuzzleTransport implements ITransport
                 case 400:
                     $response = json_decode($e->getResponse()->getBody()->getContents(), true);
                     if ($response['message'] == 'checkpoint_required') {
-                        $exception = new ChallengeRequiredException("ChallengeRequired");
+                        $exception = new ChallengeRequiredException("ChallengeRequired. " . $exception_message);
                         $exception->challengeInfo = $response;
 
                         throw $exception;
@@ -154,35 +155,42 @@ class GuzzleTransport implements ITransport
                 case 403:
                     $contents = $e->getResponse()->getBody()->getContents();
                     if ($contents == "Please wait a few minutes before you try again.") {
-                        throw new TooManyRequestsException("TooManyRequests");
+                        throw new TooManyRequestsException("TooManyRequests. " . $exception_message);
                     }
                     $response_array = json_decode($contents, true);
                     if (!empty($response_array) && !empty($response_array['message']) && ($response_array['message'] == "Please wait a few minutes before you try again.")) {
-                        throw new TooManyRequestsException("TooManyRequests");
+                        throw new TooManyRequestsException("TooManyRequests. " . $exception_message);
                     }
-                    throw new ForbiddenInstagramException("InvalidInputParams");
+                    throw new ForbiddenInstagramException("InvalidInputParams. " . $exception_message);
                     break;
                 case 404:
-                    throw new NotFoundInstagramException("NotFound");
+                    $contents = $e->getResponse()->getBody()->getContents();
+                    if ($contents == 'This action was blocked. Please try again later.') {
+                        throw new TooManyRequestsException("TooManyRequests. " . $exception_message);
+                    }
+                    if ($contents == 'This action was blocked. Please try again later.') {
+                        throw new TooManyRequestsException("TooManyRequests. " . $exception_message);
+                    }
+                    throw new NotFoundInstagramException("NotFound. " . $exception_message);
                     break;
                 case 405:
-                    throw new InvalidRequestMethodException("InvalidRequestMethod");
+                    throw new InvalidRequestMethodException("InvalidRequestMethod. " . $exception_message);
                     break;
                 case 407:
-                    throw new InvalidProxyException("InvalidProxy");
+                    throw new InvalidProxyException("InvalidProxy. " . $exception_message);
                     break;
                 case 429:
-                    throw new TooManyRequestsException("TooManyRequests");
+                    throw new TooManyRequestsException("TooManyRequests. " . $exception_message);
                     break;
                 default:
-                    throw new InstagramException($e->getMessage());
+                    throw new InstagramException($e->getMessage() . " " . $exception_message);
                     break;
             }
         }
         if (!empty($this->response)) {
             return $this->response->getBody()->getContents();
         }
-        throw new BadResponseException("BadResponse");
+        throw new BadResponseException("BadResponse. Empty response.");
     }
 
     public function getRequestInfo()
