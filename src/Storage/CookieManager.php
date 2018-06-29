@@ -87,9 +87,11 @@ class CookieManager
      */
     public function saveCookie()
     {
-        $f = fopen($this->cookie_file, "w");
-        fwrite($f, json_encode($this->cookie_data));
-        fclose($f);
+        if (file_exists($this->cookie_file)) {
+            $f = fopen($this->cookie_file, "w");
+            fwrite($f, json_encode($this->cookie_data));
+            fclose($f);
+        }
     }
 
     public function getCookieString()
