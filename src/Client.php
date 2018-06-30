@@ -104,6 +104,8 @@ class Client
     public function setPassword($password)
     {
         $this->password = $password;
+        $this->cookie->setCookieFile($this->getUsername() . "_" . sha1($this->getPassword()));
+        $this->cookie->loadCookie();
     }
 
 
