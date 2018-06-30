@@ -31,7 +31,6 @@ class RequestTagFeed extends NonAuthorizedRequest
             'after' => $this->data['after']
         ];
         $variables = array_filter($variables);
-        var_dump($variables);
         $params = [
             'query_hash' => QueryProperty::QUERY_HASH_TAG_FEED,
             'variables' => json_encode($variables)
