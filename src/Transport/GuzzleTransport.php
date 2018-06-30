@@ -134,17 +134,14 @@ class GuzzleTransport implements ITransport
 
         } catch (RequestException $e) {
             $http_code = $e->getCode();
-            $exception_message = '';
-            $response = $e->getResponse();
-            if (!is_null($response)) {
-                $exception_message = $response->getBody()->getContents();
-            }
-            switch ($e->getCode()) {
+            $exception_body = $e->getResponse()->getBody();
+            $exception_message = $exception_body->getContents();
+            switch ($http_code) {
                 case 200:
 //                ok
                     break;
                 case 400:
-                    $response = json_decode($e->getResponse()->getBody()->getContents(), true);
+                    $response = json_decode($exception_message, true);
                     if ($response['message'] == 'checkpoint_required') {
                         $exception = new ChallengeRequiredException("ChallengeRequired. " . $exception_message);
                         $exception->challengeInfo = $response;
@@ -152,12 +149,12 @@ class GuzzleTransport implements ITransport
                         throw $exception;
                     }
                     $exception = new InstagramException($e->getMessage());
-                    $exception->body = $e->getResponse()->getBody();
+                    $exception->body = $exception_body;
 
                     throw $exception;
                     break;
                 case 403:
-                    $contents = $e->getResponse()->getBody()->getContents();
+                    $contents = $exception_message;
                     if ($contents == "Please wait a few minutes before you try again.") {
                         throw new TooManyRequestsException("TooManyRequests. " . $exception_message);
                     }
@@ -168,7 +165,7 @@ class GuzzleTransport implements ITransport
                     throw new ForbiddenInstagramException("InvalidInputParams. " . $exception_message);
                     break;
                 case 404:
-                    $contents = $e->getResponse()->getBody()->getContents();
+                    $contents = $exception_message;
                     if ($contents == 'This action was blocked. Please try again later.') {
                         throw new TooManyRequestsException("TooManyRequests. " . $exception_message);
                     }
