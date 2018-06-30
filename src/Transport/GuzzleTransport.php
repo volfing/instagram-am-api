@@ -135,7 +135,7 @@ class GuzzleTransport implements ITransport
         } catch (RequestException $e) {
             $http_code = $e->getCode();
             $exception_body = $e->getResponse()->getBody();
-            $exception_message = "";
+            $exception_message = $exception_body;
             if (!empty($exception_body)) {
                 $exception_message = $exception_body->getContents();
             }
