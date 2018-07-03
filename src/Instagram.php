@@ -146,6 +146,7 @@ class Instagram
      * @return array|bool
      * @throws BadResponseException
      * @throws IncorrectPasswordException
+     * @throws InstagramException
      * @throws InvalidUserException
      */
     private function _login($force)
@@ -159,6 +160,9 @@ class Instagram
         ]);
         $response = $request->send();
         if (is_array($response)) {
+            if (!isset($response['authenticated'])) {
+                throw new InstagramException('Bad response. ' . json_encode($response));
+            }
             if ($response['authenticated']) {
                 return true;
             }
