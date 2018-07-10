@@ -231,16 +231,16 @@
         },
         {
             "name": "lazyjsonmapper/lazyjsonmapper",
-            "version": "v1.6.1",
+            "version": "v1.6.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/SteveJobzniak/LazyJsonMapper.git",
-                "reference": "f30b4d0b3f416631e3411d66962a55f586d04809"
+                "url": "https://github.com/lazyjsonmapper/lazyjsonmapper.git",
+                "reference": "51e093b50f4de15d2d64548b3ca743713eed6ee9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SteveJobzniak/LazyJsonMapper/zipball/f30b4d0b3f416631e3411d66962a55f586d04809",
-                "reference": "f30b4d0b3f416631e3411d66962a55f586d04809",
+                "url": "https://api.github.com/repos/lazyjsonmapper/lazyjsonmapper/zipball/51e093b50f4de15d2d64548b3ca743713eed6ee9",
+                "reference": "51e093b50f4de15d2d64548b3ca743713eed6ee9",
                 "shasum": ""
             },
             "require": {
@@ -277,7 +277,7 @@
                 "development",
                 "json"
             ],
-            "time": "2017-12-02T03:56:54+00:00"
+            "time": "2018-05-02T16:57:09+00:00"
         },
         {
             "name": "psr/http-message",

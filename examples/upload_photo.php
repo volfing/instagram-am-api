@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $username = $_POST['username'];
         $password = $_POST['password'];
         $instagram->setUser($username, $password);
+        $instagram->login();
         $file = $_FILES['photo'];
         $photo =null;
         if ($file['error'] == 0) {
