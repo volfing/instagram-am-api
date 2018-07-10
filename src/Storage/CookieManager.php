@@ -73,6 +73,14 @@ class CookieManager
     }
 
     /**
+     * @return mixed
+     */
+    public function getCookies()
+    {
+        return $this->cookie_data;
+    }
+
+    /**
      * Загрузить данные из кук
      */
     public function loadCookie()

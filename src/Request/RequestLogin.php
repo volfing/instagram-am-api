@@ -25,11 +25,7 @@ class RequestLogin extends BaseRequest
         $this->setPost(true);
         $this->setPostData($this->data);
         $headers = [
-            "Cookie" => [
-                "rur" => $this->client->cookie->getCookie("rur"),
-                "csrftoken" => $this->client->cookie->getCookie("csrftoken"),
-                "mid" => $this->client->cookie->getCookie("mid")
-            ],
+            "Cookie" => $this->client->cookie->getCookies(),
             "Referer" => "https://www.instagram.com/",
             "x-csrftoken" => $this->client->cookie->getCookie("csrftoken"),
             "x-instagram-ajax" => $this->client->cookie->getCookie("x_instagram_ajax"),

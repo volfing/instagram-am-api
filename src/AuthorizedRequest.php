@@ -32,14 +32,7 @@ class AuthorizedRequest extends Request
     {
         parent::init($url, $params);
         $headers = [
-            "Cookie" => [
-                "rur" => $this->client->cookie->getCookie("rur"),
-                "csrftoken" => $this->client->cookie->getCookie("csrftoken"),
-                "mid" => $this->client->cookie->getCookie("mid"),
-                "sessionid" => $this->client->cookie->getCookie("sessionid"),
-                "ds_user_id" => $this->client->cookie->getCookie("ds_user_id"),
-                "shbid" => $this->client->cookie->getCookie("shbid")
-            ],
+            "Cookie" => $this->client->cookie->getCookies(),
             "Referer" => "https://www.instagram.com/",
             'Authority' => 'www.instagram.com',
             'Origin' => 'https://www.instagram.com',
@@ -47,7 +40,8 @@ class AuthorizedRequest extends Request
             "x-instagram-ajax" => $this->client->cookie->getCookie("x_instagram_ajax"),
             "x-requested-with" => "XMLHttpRequest",
             "Content-Type" => "application/x-www-form-urlencoded",
-            "User-Agent" => $this->client->getUserAgent()
+            "User-Agent" => $this->client->getUserAgent(),
+            "upgrade-insecure-requests" => 1,
         ];
         $this->setHeaders($headers);
     }
